@@ -1,9 +1,22 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { supabase } from '../../lib/supabase'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBox, faTags, faExclamationTriangle, faTimesCircle, faEnvelope, faPlus, faEdit, faSync, faEye, faTrash, faCheck, faChartLine } from '@fortawesome/free-solid-svg-icons'
-import styles from './Admin.module.css'
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faBox,
+  faTags,
+  faExclamationTriangle,
+  faTimesCircle,
+  faEnvelope,
+  faPlus,
+  faEdit,
+  faSync,
+  faEye,
+  faTrash,
+  faCheck,
+  faChartLine,
+} from '@fortawesome/free-solid-svg-icons';
+import styles from './Admin.module.css';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -12,142 +25,135 @@ const AdminDashboard = () => {
     lowStock: 0,
     outOfStock: 0,
     totalMessages: 0,
-    unreadMessages: 0
-  })
-  const [recentProducts, setRecentProducts] = useState([])
-  const [recentMessages, setRecentMessages] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [showMessages, setShowMessages] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
+    unreadMessages: 0,
+  });
+  const [recentProducts, setRecentProducts] = useState([]);
+  const [recentMessages, setRecentMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showMessages, setShowMessages] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    fetchDashboardData()
-    
-    // Real-time subscription for products
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    fetchDashboardData();
+
     const productsSubscription = supabase
       .channel('products_channel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => fetchDashboardData())
-      .subscribe()
+      .subscribe();
 
-    // Real-time subscription for messages
     const messagesSubscription = supabase
       .channel('messages_channel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'contact_messages' }, () => fetchDashboardData())
-      .subscribe()
+      .subscribe();
 
     return () => {
-      window.removeEventListener('resize', checkMobile)
-      productsSubscription.unsubscribe()
-      messagesSubscription.unsubscribe()
-    }
-  }, [])
+      window.removeEventListener('resize', checkMobile);
+      productsSubscription.unsubscribe();
+      messagesSubscription.unsubscribe();
+    };
+  }, []);
 
   const fetchDashboardData = async () => {
-    setLoading(true)
-    
+    setLoading(true);
     const { data: products } = await supabase
       .from('products')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false });
 
     const { data: messages } = await supabase
       .from('contact_messages')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false });
 
     if (products) {
-      const categories = [...new Set(products.map(p => p.category))]
-      const lowStock = products.filter(p => p.quantity > 0 && p.quantity < 10).length
-      const outOfStock = products.filter(p => p.quantity === 0).length
-      
+      const categories = [...new Set(products.map((p) => p.category))];
+      const lowStock = products.filter((p) => p.quantity > 0 && p.quantity < 10).length;
+      const outOfStock = products.filter((p) => p.quantity === 0).length;
+
       setStats({
         totalProducts: products.length,
         totalCategories: categories.length,
         lowStock,
         outOfStock,
         totalMessages: messages?.length || 0,
-        unreadMessages: messages?.filter(m => !m.is_read).length || 0
-      })
-      
-      setRecentProducts(products.slice(0, 5))
-      setRecentMessages(messages?.slice(0, 5) || [])
+        unreadMessages: messages?.filter((m) => !m.is_read).length || 0,
+      });
+
+      setRecentProducts(products.slice(0, 5));
+      setRecentMessages(messages?.slice(0, 5) || []);
     }
-    
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const markAsRead = async (id) => {
     const { error } = await supabase
       .from('contact_messages')
       .update({ is_read: true })
-      .eq('id', id)
-    
-    if (!error) {
-      fetchDashboardData()
-    }
-  }
+      .eq('id', id);
+    if (!error) fetchDashboardData();
+  };
 
   const deleteMessage = async (id) => {
     if (window.confirm('Are you sure you want to delete this message?')) {
-      const { error } = await supabase
-        .from('contact_messages')
-        .delete()
-        .eq('id', id)
-      
+      const { error } = await supabase.from('contact_messages').delete().eq('id', id);
       if (!error) {
-        alert('Message deleted successfully!')
-        fetchDashboardData()
+        alert('Message deleted successfully!');
+        fetchDashboardData();
       }
     }
-  }
+  };
 
-  // Mobile View
+  // ─────────────────────────────────────────────────────────────
+  //  MOBILE VIEW
+  // ─────────────────────────────────────────────────────────────
   if (isMobile) {
     return (
-      <div className={styles.mobileAdminDashboard}>
-        <div className={styles.mobileHeader}>
+      <div className={styles.mobileContainer}>
+        <header className={styles.mobileHeader}>
           <h1>Admin Dashboard</h1>
-          <p>Welcome back!</p>
-        </div>
+          <p>Welcome back! 👋</p>
+        </header>
 
         <div className={styles.mobileStatsGrid}>
           <div className={styles.mobileStatCard}>
-            <FontAwesomeIcon icon={faBox} />
+            <FontAwesomeIcon icon={faBox} className={styles.statIconMobile} />
             <div>
               <span className={styles.mobileStatNumber}>{stats.totalProducts}</span>
               <span className={styles.mobileStatLabel}>Products</span>
             </div>
           </div>
           <div className={styles.mobileStatCard}>
-            <FontAwesomeIcon icon={faTags} />
+            <FontAwesomeIcon icon={faTags} className={styles.statIconMobile} />
             <div>
               <span className={styles.mobileStatNumber}>{stats.totalCategories}</span>
               <span className={styles.mobileStatLabel}>Categories</span>
             </div>
           </div>
           <div className={styles.mobileStatCard}>
-            <FontAwesomeIcon icon={faExclamationTriangle} />
+            <FontAwesomeIcon icon={faExclamationTriangle} className={styles.statIconMobile} />
             <div>
               <span className={styles.mobileStatNumber}>{stats.lowStock}</span>
               <span className={styles.mobileStatLabel}>Low Stock</span>
             </div>
           </div>
           <div className={styles.mobileStatCard}>
-            <FontAwesomeIcon icon={faTimesCircle} />
+            <FontAwesomeIcon icon={faTimesCircle} className={styles.statIconMobile} />
             <div>
               <span className={styles.mobileStatNumber}>{stats.outOfStock}</span>
               <span className={styles.mobileStatLabel}>Out of Stock</span>
             </div>
           </div>
           <div className={styles.mobileStatCard}>
-            <FontAwesomeIcon icon={faEnvelope} />
+            <FontAwesomeIcon icon={faEnvelope} className={styles.statIconMobile} />
             <div>
               <span className={styles.mobileStatNumber}>{stats.totalMessages}</span>
               <span className={styles.mobileStatLabel}>Messages</span>
-              {stats.unreadMessages > 0 && <span className={styles.mobileUnreadBadge}>{stats.unreadMessages}</span>}
+              {stats.unreadMessages > 0 && (
+                <span className={styles.mobileUnreadBadge}>{stats.unreadMessages}</span>
+              )}
             </div>
           </div>
         </div>
@@ -162,52 +168,72 @@ const AdminDashboard = () => {
           <Link to="/admin/categories" className={styles.mobileActionBtn}>
             <FontAwesomeIcon icon={faPlus} /> Add Category
           </Link>
-          <button onClick={() => setShowMessages(!showMessages)} className={styles.mobileActionBtn}>
+          <button
+            onClick={() => setShowMessages(!showMessages)}
+            className={`${styles.mobileActionBtn} ${showMessages ? styles.active : ''}`}
+          >
             <FontAwesomeIcon icon={faEnvelope} /> Messages
+            {stats.unreadMessages > 0 && !showMessages && (
+              <span className={styles.notificationDot}>{stats.unreadMessages}</span>
+            )}
           </button>
         </div>
 
         {showMessages && (
           <div className={styles.mobileMessages}>
             <h3>Contact Messages</h3>
-            {recentMessages.map(msg => (
-              <div key={msg.id} className={`${styles.mobileMessageCard} ${!msg.is_read ? styles.unread : ''}`}>
-                <div className={styles.mobileMessageHeader}>
-                  <strong>{msg.name}</strong>
-                  <span>{msg.email}</span>
+            {recentMessages.length === 0 ? (
+              <p className={styles.emptyState}>No messages yet.</p>
+            ) : (
+              recentMessages.map((msg) => (
+                <div key={msg.id} className={`${styles.mobileMessageCard} ${!msg.is_read ? styles.unread : ''}`}>
+                  <div className={styles.mobileMessageHeader}>
+                    <strong>{msg.name}</strong>
+                    <span>{msg.email}</span>
+                  </div>
+                  <p className={styles.mobileMessageContent}>{msg.message}</p>
+                  <div className={styles.mobileMessageActions}>
+                    {!msg.is_read && (
+                      <button onClick={() => markAsRead(msg.id)}>
+                        <FontAwesomeIcon icon={faCheck} /> Read
+                      </button>
+                    )}
+                    <button onClick={() => deleteMessage(msg.id)}>
+                      <FontAwesomeIcon icon={faTrash} /> Delete
+                    </button>
+                  </div>
                 </div>
-                <p className={styles.mobileMessageContent}>{msg.message}</p>
-                <div className={styles.mobileMessageActions}>
-                  {!msg.is_read && (
-                    <button onClick={() => markAsRead(msg.id)}><FontAwesomeIcon icon={faCheck} /> Read</button>
-                  )}
-                  <button onClick={() => deleteMessage(msg.id)}><FontAwesomeIcon icon={faTrash} /> Delete</button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
 
         <div className={styles.mobileProducts}>
           <h3>Recent Products</h3>
-          {recentProducts.map(product => (
-            <div key={product.id} className={styles.mobileProductCard}>
-              <img src={product.images[0] || 'https://placehold.co/50'} alt={product.name} />
-              <div>
-                <h4>{product.name}</h4>
-                <p>₹{product.price.toLocaleString()} | Stock: {product.quantity}</p>
+          {recentProducts.length === 0 ? (
+            <p className={styles.emptyState}>No products yet.</p>
+          ) : (
+            recentProducts.map((product) => (
+              <div key={product.id} className={styles.mobileProductCard}>
+                <img src={product.images[0] || 'https://placehold.co/50'} alt={product.name} />
+                <div>
+                  <h4>{product.name}</h4>
+                  <p>₹{product.price.toLocaleString()} | Stock: {product.quantity}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
-    )
+    );
   }
 
-  // Desktop View
+  // ─────────────────────────────────────────────────────────────
+  //  DESKTOP VIEW
+  // ─────────────────────────────────────────────────────────────
   return (
-    <div className={styles.desktopAdminDashboard}>
-      <div className={styles.desktopHeader}>
+    <div className={styles.desktopContainer}>
+      <header className={styles.desktopHeader}>
         <div>
           <h1>Admin Dashboard</h1>
           <p>Welcome back! Here's what's happening with your store today.</p>
@@ -215,45 +241,41 @@ const AdminDashboard = () => {
         <button onClick={fetchDashboardData} className={styles.refreshBtn}>
           <FontAwesomeIcon icon={faSync} /> Refresh
         </button>
-      </div>
+      </header>
 
       <div className={styles.desktopStatsGrid}>
         <div className={styles.desktopStatCard}>
-          <div className={styles.statIcon}><FontAwesomeIcon icon={faBox} /></div>
-          <div className={styles.statInfo}>
+          <div className={styles.statIconDesktop}><FontAwesomeIcon icon={faBox} /></div>
+          <div>
             <h3>Total Products</h3>
             <p className={styles.statNumber}>{stats.totalProducts}</p>
           </div>
         </div>
-
         <div className={styles.desktopStatCard}>
-          <div className={styles.statIcon}><FontAwesomeIcon icon={faTags} /></div>
-          <div className={styles.statInfo}>
+          <div className={styles.statIconDesktop}><FontAwesomeIcon icon={faTags} /></div>
+          <div>
             <h3>Categories</h3>
             <p className={styles.statNumber}>{stats.totalCategories}</p>
           </div>
         </div>
-
         <div className={styles.desktopStatCard}>
-          <div className={styles.statIcon}><FontAwesomeIcon icon={faExclamationTriangle} /></div>
-          <div className={styles.statInfo}>
+          <div className={styles.statIconDesktop}><FontAwesomeIcon icon={faExclamationTriangle} /></div>
+          <div>
             <h3>Low Stock</h3>
             <p className={styles.statNumber}>{stats.lowStock}</p>
           </div>
         </div>
-
         <div className={styles.desktopStatCard}>
-          <div className={styles.statIcon}><FontAwesomeIcon icon={faTimesCircle} /></div>
-          <div className={styles.statInfo}>
+          <div className={styles.statIconDesktop}><FontAwesomeIcon icon={faTimesCircle} /></div>
+          <div>
             <h3>Out of Stock</h3>
             <p className={styles.statNumber}>{stats.outOfStock}</p>
           </div>
         </div>
-
         <div className={styles.desktopStatCard}>
-          <div className={styles.statIcon}><FontAwesomeIcon icon={faEnvelope} /></div>
-          <div className={styles.statInfo}>
-            <h3>Total Messages</h3>
+          <div className={styles.statIconDesktop}><FontAwesomeIcon icon={faEnvelope} /></div>
+          <div>
+            <h3>Messages</h3>
             <p className={styles.statNumber}>{stats.totalMessages}</p>
             {stats.unreadMessages > 0 && (
               <span className={styles.unreadBadge}>{stats.unreadMessages} unread</span>
@@ -274,7 +296,7 @@ const AdminDashboard = () => {
           <Link to="/admin/products" className={styles.actionBtn}>
             <FontAwesomeIcon icon={faEdit} /> Manage Products
           </Link>
-          <button 
+          <button
             className={`${styles.actionBtn} ${showMessages ? styles.active : ''}`}
             onClick={() => setShowMessages(!showMessages)}
           >
@@ -290,71 +312,89 @@ const AdminDashboard = () => {
       {showMessages && (
         <div className={styles.desktopMessagesSection}>
           <h2>Contact Messages</h2>
-          {recentMessages.map(message => (
-            <div key={message.id} className={`${styles.messageCard} ${!message.is_read ? styles.unread : ''}`}>
-              <div className={styles.messageHeader}>
-                <div>
-                  <strong>{message.name}</strong>
-                  <span className={styles.messageEmail}>{message.email}</span>
-                </div>
-                <div className={styles.messageActions}>
-                  {!message.is_read && (
-                    <button onClick={() => markAsRead(message.id)} className={styles.readBtn}>
-                      <FontAwesomeIcon icon={faCheck} /> Mark as Read
+          {recentMessages.length === 0 ? (
+            <p className={styles.emptyState}>No messages yet.</p>
+          ) : (
+            recentMessages.map((message) => (
+              <div key={message.id} className={`${styles.messageCard} ${!message.is_read ? styles.unread : ''}`}>
+                <div className={styles.messageHeader}>
+                  <div>
+                    <strong>{message.name}</strong>
+                    <span className={styles.messageEmail}>{message.email}</span>
+                  </div>
+                  <div className={styles.messageActions}>
+                    {!message.is_read && (
+                      <button onClick={() => markAsRead(message.id)} className={styles.readBtn}>
+                        <FontAwesomeIcon icon={faCheck} /> Mark as Read
+                      </button>
+                    )}
+                    <button onClick={() => deleteMessage(message.id)} className={styles.deleteBtn}>
+                      <FontAwesomeIcon icon={faTrash} /> Delete
                     </button>
-                  )}
-                  <button onClick={() => deleteMessage(message.id)} className={styles.deleteBtn}>
-                    <FontAwesomeIcon icon={faTrash} /> Delete
-                  </button>
+                  </div>
+                </div>
+                <div className={styles.messageSubject}>
+                  <strong>Subject:</strong> {message.subject || 'No subject'}
+                </div>
+                <div className={styles.messageContent}>{message.message}</div>
+                <div className={styles.messageDate}>
+                  {new Date(message.created_at).toLocaleString()}
                 </div>
               </div>
-              <div className={styles.messageSubject}>
-                <strong>Subject:</strong> {message.subject || 'No subject'}
-              </div>
-              <div className={styles.messageContent}>{message.message}</div>
-              <div className={styles.messageDate}>
-                {new Date(message.created_at).toLocaleString()}
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
 
       <div className={styles.desktopRecentProducts}>
         <h2>Recently Added Products</h2>
-        <div className={styles.productsTable}>
-          <table>
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Product Name</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentProducts.map(product => (
-                <tr key={product.id}>
-                  <td><img src={product.images[0] || 'https://placehold.co/50'} alt={product.name} className={styles.productThumb} /></td>
-                  <td>{product.name}</td>
-                  <td>{product.category}</td>
-                  <td>₹{product.price.toLocaleString()}</td>
-                  <td>{product.quantity}</td>
-                  <td>
-                    <span className={`${styles.statusBadge} ${product.quantity > 0 ? styles.inStock : styles.outStock}`}>
-                      {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
-                    </span>
-                  </td>
+        {recentProducts.length === 0 ? (
+          <p className={styles.emptyState}>No products yet.</p>
+        ) : (
+          <div className={styles.productsTableWrapper}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {recentProducts.map((product) => (
+                  <tr key={product.id}>
+                    <td>
+                      <img
+                        src={product.images[0] || 'https://placehold.co/50'}
+                        alt={product.name}
+                        className={styles.productThumb}
+                      />
+                    </td>
+                    <td>{product.name}</td>
+                    <td>{product.category}</td>
+                    <td>₹{product.price.toLocaleString()}</td>
+                    <td>{product.quantity}</td>
+                    <td>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          product.quantity > 0 ? styles.inStock : styles.outStock
+                        }`}
+                      >
+                        {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminDashboard
+export default AdminDashboard;
