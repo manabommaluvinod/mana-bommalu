@@ -1,0 +1,957 @@
+/* ========== DESKTOP DASHBOARD STYLES ========== */
+.desktopAdminDashboard {
+  background: #F8F7F4;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.desktopHeader {
+  background: white;
+  padding: 1.5rem 2rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #E8DCC8;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.desktopHeader h1 {
+  color: #1a1a2e;
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.desktopHeader p {
+  color: #8B7D6E;
+  font-size: 0.9rem;
+}
+
+.refreshBtn {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.refreshBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(26, 26, 46, 0.3);
+}
+
+/* Stats Grid */
+.desktopStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.desktopStatCard {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  border: 1px solid #E8DCC8;
+  position: relative;
+  overflow: hidden;
+}
+
+.desktopStatCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, #C9A96E, #B8924F);
+}
+
+.desktopStatCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.statIcon {
+  width: 55px;
+  height: 55px;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #C9A96E;
+}
+
+.statInfo h3 {
+  color: #8B7D6E;
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+}
+
+.statNumber {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.unreadBadge {
+  display: inline-block;
+  background: #FF9800;
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  margin-left: 0.5rem;
+}
+
+/* Quick Actions */
+.desktopQuickActions {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  border: 1px solid #E8DCC8;
+}
+
+.desktopQuickActions h2 {
+  color: #1a1a2e;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.actionBtn {
+  background: #F8F7F4;
+  color: #1a1a2e;
+  border: 1px solid #E8DCC8;
+  padding: 0.7rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actionBtn:hover {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  transform: translateY(-2px);
+  border-color: transparent;
+}
+
+.actionBtn.active {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+}
+
+.notificationBadge {
+  background: #f44336;
+  color: white;
+  border-radius: 50%;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.7rem;
+  margin-left: 0.5rem;
+}
+
+/* Messages Section */
+.desktopMessagesSection {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  border: 1px solid #E8DCC8;
+}
+
+.desktopMessagesSection h2 {
+  color: #1a1a2e;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.messageCard {
+  border: 1px solid #E8DCC8;
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #FDFBF8;
+  transition: all 0.3s ease;
+}
+
+.messageCard.unread {
+  background: #FFF9F0;
+  border-left: 4px solid #C9A96E;
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.messageHeader strong {
+  color: #1a1a2e;
+  font-size: 1rem;
+}
+
+.messageEmail {
+  color: #8B7D6E;
+  font-size: 0.8rem;
+  margin-left: 1rem;
+}
+
+.messageActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.readBtn, .deleteBtn {
+  padding: 0.3rem 0.8rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.readBtn {
+  background: #4CAF50;
+  color: white;
+}
+
+.readBtn:hover {
+  background: #45a049;
+}
+
+.deleteBtn {
+  background: #f44336;
+  color: white;
+}
+
+.deleteBtn:hover {
+  background: #da190b;
+}
+
+.messageSubject {
+  margin-bottom: 0.5rem;
+  color: #5A4A3A;
+  font-size: 0.85rem;
+}
+
+.messageContent {
+  color: #5A4A3A;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.messageDate {
+  font-size: 0.7rem;
+  color: #8B7D6E;
+}
+
+/* Recent Products */
+.desktopRecentProducts {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  border: 1px solid #E8DCC8;
+}
+
+.desktopRecentProducts h2 {
+  color: #1a1a2e;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.productsTable {
+  overflow-x: auto;
+}
+
+.productsTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.productsTable th,
+.productsTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #E8DCC8;
+}
+
+.productsTable th {
+  background: #F8F7F4;
+  color: #1a1a2e;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.productThumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.statusBadge {
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.inStock {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.outStock {
+  background: #FFEBEE;
+  color: #C62828;
+}
+
+/* ========== DESKTOP PRODUCTS STYLES ========== */
+.desktopAdminProducts {
+  background: #F8F7F4;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.addBtn {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.8rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.addBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(26, 26, 46, 0.3);
+}
+
+.productForm {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  border: 1px solid #E8DCC8;
+}
+
+.productForm h2 {
+  color: #1a1a2e;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.formGroup input,
+.formGroup textarea {
+  padding: 0.8rem;
+  border: 1px solid #E8DCC8;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: #FDFBF8;
+}
+.formGroup select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #E8DCC8;
+  border-radius: 12px;
+  font-size: 14px;
+  background-color: #FDFBF8;
+  outline: none;
+  appearance: none; /* removes weird browser style */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333'%3E%3Cpath d='M4 6l4 4 4-4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #C9A96E;
+  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.1);
+}
+
+.fullWidth {
+  grid-column: span 2;
+}
+
+.imageUploadArea {
+  border: 2px dashed #E8DCC8;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  background: #FDFBF8;
+}
+
+.imagePreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.imagePreview {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #E8DCC8;
+}
+
+.imagePreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagePreview button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(244, 67, 54, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.formActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: flex-end;
+}
+
+.saveBtn, .cancelBtn {
+  padding: 0.8rem 1.8rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.saveBtn {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+}
+
+.saveBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(26, 26, 46, 0.3);
+}
+
+.cancelBtn {
+  background: #F8F7F4;
+  color: #5A4A3A;
+  border: 1px solid #E8DCC8;
+}
+
+.cancelBtn:hover {
+  background: #EEECE8;
+}
+
+.editBtn, .deleteBtn {
+  padding: 0.4rem 0.8rem;
+  margin: 0 0.25rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.editBtn {
+  background: #2196F3;
+  color: white;
+}
+
+.editBtn:hover {
+  background: #0b7dda;
+}
+
+.deleteBtn {
+  background: #f44336;
+  color: white;
+}
+
+.deleteBtn:hover {
+  background: #da190b;
+}
+
+/* ========== MOBILE DASHBOARD STYLES ========== */
+.mobileAdminDashboard {
+  background: #F8F7F4;
+  min-height: 100vh;
+  padding: 1rem;
+  padding-bottom: 80px;
+}
+
+.mobileHeader {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.mobileHeader h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.mobileHeader p {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.mobileStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.mobileStatCard {
+  background: white;
+  padding: 1rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid #E8DCC8;
+}
+
+.mobileStatCard svg {
+  font-size: 1.5rem;
+  color: #C9A96E;
+}
+
+.mobileStatCard div {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileStatNumber {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.mobileStatLabel {
+  font-size: 0.7rem;
+  color: #8B7D6E;
+}
+
+.mobileUnreadBadge {
+  background: #FF9800;
+  color: white;
+  border-radius: 50%;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.6rem;
+  margin-left: 0.3rem;
+}
+
+.mobileActions {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.mobileActionBtn {
+  flex: 1;
+  background: white;
+  border: 1px solid #E8DCC8;
+  padding: 0.7rem;
+  border-radius: 12px;
+  text-align: center;
+  text-decoration: none;
+  color: #1a1a2e;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.mobileMessages {
+  background: white;
+  padding: 1rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  border: 1px solid #E8DCC8;
+}
+
+.mobileMessages h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #1a1a2e;
+}
+
+.mobileMessageCard {
+  border: 1px solid #E8DCC8;
+  border-radius: 12px;
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.mobileMessageCard.unread {
+  background: #FFF9F0;
+  border-left: 3px solid #C9A96E;
+}
+
+.mobileMessageHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mobileMessageHeader strong {
+  font-size: 0.85rem;
+  color: #1a1a2e;
+}
+
+.mobileMessageHeader span {
+  font-size: 0.7rem;
+  color: #8B7D6E;
+}
+
+.mobileMessageContent {
+  font-size: 0.75rem;
+  color: #5A4A3A;
+  margin-bottom: 0.5rem;
+}
+
+.mobileMessageActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mobileMessageActions button {
+  padding: 0.2rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.mobileProducts {
+  background: white;
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid #E8DCC8;
+}
+
+.mobileProducts h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #1a1a2e;
+}
+
+.mobileProductCard {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  border-bottom: 1px solid #E8DCC8;
+}
+
+.mobileProductCard:last-child {
+  border-bottom: none;
+}
+
+.mobileProductCard img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.mobileProductCard h4 {
+  font-size: 0.85rem;
+  color: #1a1a2e;
+  margin-bottom: 0.2rem;
+}
+
+.mobileProductCard p {
+  font-size: 0.7rem;
+  color: #8B7D6E;
+}
+
+/* ========== MOBILE PRODUCTS STYLES ========== */
+.mobileAdminProducts {
+  background: #F8F7F4;
+  min-height: 100vh;
+  padding: 1rem;
+  padding-bottom: 80px;
+}
+
+.mobileAddBtn {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mobileForm {
+  background: white;
+  padding: 1rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+}
+
+.mobileForm h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #1a1a2e;
+}
+
+.mobileForm input,
+.mobileForm textarea,
+.mobileForm select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #E8DCC8;
+  border-radius: 12px;
+  margin-bottom: 0.8rem;
+  font-size: 0.85rem;
+}
+
+.mobileImageUpload {
+  margin-bottom: 1rem;
+}
+
+.mobileImageUpload label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  background: #F8F7F4;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.mobileImageUpload input {
+  display: none;
+}
+
+.mobileImagePreview {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mobilePreviewItem {
+  position: relative;
+  width: 70px;
+  height: 70px;
+}
+
+.mobilePreviewItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.mobilePreviewItem button {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.mobileFormActions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.mobileFormActions button {
+  flex: 1;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.mobileProductsList {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.mobileProductItem {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  border-bottom: 1px solid #E8DCC8;
+}
+
+.mobileProductItem img {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.mobileProductDetails {
+  flex: 1;
+}
+
+.mobileProductDetails h4 {
+  font-size: 0.85rem;
+  color: #1a1a2e;
+  margin-bottom: 0.2rem;
+}
+
+.mobileProductDetails p {
+  font-size: 0.7rem;
+  color: #8B7D6E;
+  margin-bottom: 0.2rem;
+}
+
+.mobileStatus {
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+}
+
+.mobileProductActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mobileProductActions button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.3rem;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .desktopAdminDashboard,
+  .desktopAdminProducts {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobileAdminDashboard,
+  .mobileAdminProducts {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobileStatsGrid {
+    gap: 0.5rem;
+  }
+  
+  .mobileStatCard {
+    padding: 0.7rem;
+  }
+  
+  .mobileStatNumber {
+    font-size: 1rem;
+  }
+  
+  .mobileActionBtn {
+    font-size: 0.7rem;
+    padding: 0.6rem;
+  }
+}

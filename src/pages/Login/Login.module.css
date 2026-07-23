@@ -1,0 +1,559 @@
+/* ========== DESKTOP STYLES ========== */
+.desktopContainer {
+  min-height: calc(100vh - 70px);
+  background: linear-gradient(135deg, #F8F7F4 0%, #F0EDE8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated Background */
+.desktopContainer::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(201, 169, 110, 0.05) 0%, transparent 70%);
+  animation: rotateBg 30s linear infinite;
+}
+
+@keyframes rotateBg {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.desktopWrapper {
+  max-width: 1200px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: white;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.6s ease;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Left Side - Branding */
+.desktopLeft {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.desktopLeft::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+  animation: pulse 8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.desktopBrand {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.desktopLogo {
+  height: 140px;
+  width: auto;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.desktopBrand h1 {
+  color: white;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.desktopBrand p {
+  color: rgba(255,255,255,0.85);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.desktopFeatures {
+  text-align: left;
+  margin-top: 2rem;
+}
+
+.desktopFeature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  color: rgba(255,255,255,0.9);
+  font-size: 0.9rem;
+  transition: transform 0.3s ease;
+}
+
+.desktopFeature:hover {
+  transform: translateX(5px);
+}
+
+.desktopFeature span:first-child {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #C9A96E;
+}
+
+/* Right Side - Login Form */
+.desktopRight {
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+  background: white;
+}
+
+.desktopLoginBox {
+  width: 100%;
+}
+
+.desktopHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.desktopAdminBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #C9A96E, #B8924F);
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(201, 169, 110, 0.2);
+}
+
+.desktopHeader h2 {
+  font-size: 2rem;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+}
+
+.desktopHeader p {
+  color: #8B7D6E;
+  font-size: 0.9rem;
+}
+
+/* Form Styles */
+.desktopForm {
+  margin-top: 1rem;
+}
+
+.desktopInputGroup {
+  margin-bottom: 1.5rem;
+}
+
+.desktopInputGroup label {
+  display: block;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.desktopInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.desktopInputIcon {
+  position: absolute;
+  left: 1rem;
+  color: #C9A96E;
+  font-size: 1rem;
+}
+
+.desktopInputWrapper input {
+  width: 100%;
+  padding: 0.9rem 1rem 0.9rem 2.8rem;
+  border: 2px solid #E8DCC8;
+  border-radius: 14px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #FDFBF8;
+}
+
+.desktopInputWrapper input:focus {
+  outline: none;
+  border-color: #C9A96E;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.1);
+}
+
+.desktopPasswordToggle {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8B7D6E;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.desktopPasswordToggle:hover {
+  color: #C9A96E;
+}
+
+.desktopOptions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.desktopCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #8B7D6E;
+  font-size: 0.85rem;
+}
+
+.desktopCheckbox input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #C9A96E;
+}
+
+.desktopForgotPassword {
+  color: #C9A96E;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.desktopForgotPassword:hover {
+  color: #B8924F;
+  text-decoration: underline;
+}
+
+.desktopError {
+  background: #FFEBEE;
+  color: #D32F2F;
+  padding: 0.8rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  text-align: center;
+  border: 1px solid #FFCDD2;
+}
+
+.desktopLoginBtn {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.desktopLoginBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.desktopLoginBtn:hover::before {
+  left: 100%;
+}
+
+.desktopLoginBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(26, 26, 46, 0.3);
+}
+
+.desktopLoginBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.desktopSecurityNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #E8DCC8;
+  color: #8B7D6E;
+  font-size: 0.8rem;
+}
+
+/* ========== MOBILE STYLES ========== */
+.mobileContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.mobileContainer::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(201, 169, 110, 0.05) 0%, transparent 70%);
+  animation: rotateBg 20s linear infinite;
+}
+
+.mobileCard {
+  background: white;
+  border-radius: 32px;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.5s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.mobileLogo {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.mobileLogoImg {
+  height: 90px;
+  width: auto;
+  margin-bottom: 0.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.mobileCard h1 {
+  text-align: center;
+  font-size: 1.6rem;
+  color: #1a1a2e;
+  margin-bottom: 0.25rem;
+}
+
+.mobileCard > p {
+  text-align: center;
+  color: #8B7D6E;
+  font-size: 0.85rem;
+  margin-bottom: 2rem;
+}
+
+.mobileForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileInputGroup {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.mobileInputIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #C9A96E;
+  font-size: 0.9rem;
+}
+
+.mobileInputGroup input {
+  width: 100%;
+  padding: 0.85rem 1rem 0.85rem 2.8rem;
+  border: 2px solid #E8DCC8;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background: #FDFBF8;
+}
+
+.mobileInputGroup input:focus {
+  outline: none;
+  border-color: #C9A96E;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.1);
+}
+
+.mobilePasswordToggle {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8B7D6E;
+  font-size: 1rem;
+}
+
+.mobileCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  color: #8B7D6E;
+  font-size: 0.8rem;
+}
+
+.mobileCheckbox input {
+  accent-color: #C9A96E;
+}
+
+.mobileError {
+  background: #FFEBEE;
+  color: #D32F2F;
+  padding: 0.7rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.mobileLoginBtn {
+  padding: 0.9rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.mobileLoginBtn:active {
+  transform: scale(0.98);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .desktopWrapper {
+    max-width: 1000px;
+  }
+  
+  .desktopLogo {
+    height: 120px;
+  }
+  
+  .desktopBrand h1 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .desktopWrapper {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+  }
+  
+  .desktopLeft {
+    padding: 2rem;
+  }
+  
+  .desktopRight {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktopContainer {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobileContainer {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobileCard {
+    padding: 1.5rem 1rem;
+  }
+  
+  .mobileLogoImg {
+    height: 70px;
+  }
+  
+  .mobileCard h1 {
+    font-size: 1.4rem;
+  }
+}
