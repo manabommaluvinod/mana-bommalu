@@ -11,7 +11,6 @@ import {
   faSignOutAlt,
   faChild,
   faTags,
-  faBoxes,
 } from '@fortawesome/free-solid-svg-icons';
 import styles from './BottomNav.module.css';
 
@@ -31,8 +30,8 @@ const BottomNav = () => {
     const user = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (user) {
       const userData = JSON.parse(user);
-      // Follow Navbar's logic exactly (is_admin === false → admin? This seems like a bug, but we keep it)
-      setIsAdmin(userData.is_admin === false);
+      // ✅ Fixed: admin only when is_admin === true
+      setIsAdmin(userData.is_admin === true);
       setIsLoggedIn(true);
     } else {
       setIsAdmin(false);
@@ -49,10 +48,10 @@ const BottomNav = () => {
     window.location.reload();
   };
 
-  // Hide on desktop (same as original)
+  // Only show on mobile
   if (!isMobile) return null;
 
-  // Helper to check active state for links with query params
+  // Helper for active state with query params
   const isActive = (path, queryParams = {}) => {
     if (location.pathname !== path) return false;
     for (const [key, value] of Object.entries(queryParams)) {
@@ -64,7 +63,10 @@ const BottomNav = () => {
   return (
     <div className={styles.bottomNav}>
       {/* Home */}
-      <Link to="/" className={`${styles.navItem} ${location.pathname === '/' ? styles.active : ''}`}>
+      <Link
+        to="/"
+        className={`${styles.navItem} ${location.pathname === '/' ? styles.active : ''}`}
+      >
         <FontAwesomeIcon icon={faHome} className={styles.icon} />
         <span className={styles.label}>Home</span>
       </Link>
@@ -72,7 +74,9 @@ const BottomNav = () => {
       {/* Happy Kids */}
       <Link
         to="/products?category=kids"
-        className={`${styles.navItem} ${isActive('/products', { category: 'kids' }) ? styles.active : ''}`}
+        className={`${styles.navItem} ${
+          isActive('/products', { category: 'kids' }) ? styles.active : ''
+        }`}
       >
         <FontAwesomeIcon icon={faChild} className={styles.icon} />
         <span className={styles.label}>Kids</span>
@@ -81,7 +85,9 @@ const BottomNav = () => {
       {/* Under ₹300 */}
       <Link
         to="/products?maxPrice=300"
-        className={`${styles.navItem} ${isActive('/products', { maxPrice: '300' }) ? styles.active : ''}`}
+        className={`${styles.navItem} ${
+          isActive('/products', { maxPrice: '300' }) ? styles.active : ''
+        }`}
       >
         <FontAwesomeIcon icon={faTags} className={styles.icon} />
         <span className={styles.label}>Under ₹300</span>
@@ -90,7 +96,13 @@ const BottomNav = () => {
       {/* Products (regular) */}
       <Link
         to="/products"
-        className={`${styles.navItem} ${location.pathname === '/products' && !query.get('maxPrice') && !query.get('category') ? styles.active : ''}`}
+        className={`${styles.navItem} ${
+          location.pathname === '/products' &&
+          !query.get('maxPrice') &&
+          !query.get('category')
+            ? styles.active
+            : ''
+        }`}
       >
         <FontAwesomeIcon icon={faStore} className={styles.icon} />
         <span className={styles.label}>Products</span>
@@ -105,38 +117,47 @@ const BottomNav = () => {
         <span className={styles.label}>Contact</span>
       </Link>
 
-      {/* Admin links */}
+      {/* Admin links (only if admin) */}
       {isAdmin && (
         <>
           <Link
             to="/admin/dashboard"
-            className={`${styles.navItem} ${location.pathname === '/admin/dashboard' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              location.pathname === '/admin/dashboard' ? styles.active : ''
+            }`}
           >
             <FontAwesomeIcon icon={faChartLine} className={styles.icon} />
             <span className={styles.label}>Dashboard</span>
           </Link>
           <Link
             to="/admin/products"
-            className={`${styles.navItem} ${location.pathname === '/admin/products' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              location.pathname === '/admin/products' ? styles.active : ''
+            }`}
           >
             <FontAwesomeIcon icon={faPlus} className={styles.icon} />
-            <span className={styles.label}>Add Product</span>
+            <span className={styles.label}>Add</span>
           </Link>
           <Link
             to="/admin/categories"
-            className={`${styles.navItem} ${location.pathname === '/admin/categories' ? styles.active : ''}`}
+            className={`${styles.navItem} ${
+              location.pathname === '/admin/categories' ? styles.active : ''
+            }`}
           >
             <FontAwesomeIcon icon={faPlus} className={styles.icon} />
-            <span className={styles.label}>Add Category</span>
+            <span className={styles.label}>Category</span>
           </Link>
         </>
       )}
 
       {/* Login / Logout */}
       {!isLoggedIn ? (
-        <Link to="/login" className={`${styles.navItem} ${location.pathname === '/login' ? styles.active : ''}`}>
+        <Link
+          to="/login"
+          className={`${styles.navItem} ${location.pathname === '/login' ? styles.active : ''}`}
+        >
           <FontAwesomeIcon icon={faSignInAlt} className={styles.icon} />
-          <span className={styles.label}>Admin</span>
+          <span className={styles.label}>Login</span>
         </Link>
       ) : (
         <button onClick={handleLogout} className={styles.navItem}>
