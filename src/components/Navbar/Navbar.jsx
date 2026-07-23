@@ -30,7 +30,6 @@ const Navbar = () => {
     const user = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (user) {
       const userData = JSON.parse(user);
-      // ✅ Fixed: admin only when is_admin === true
       setIsAdmin(userData.is_admin === true);
       setIsLoggedIn(true);
     } else {
@@ -61,67 +60,8 @@ const Navbar = () => {
         </Link>
 
         <div className={styles.navLinks}>
-          {/* Home */}
-          <Link
-            to="/"
-            className={`${styles.navLink} ${location.pathname === '/' ? styles.active : ''}`}
-          >
-            <FontAwesomeIcon icon={faHome} />
-            <span>Home</span>
-          </Link>
-
-          {/* Happy Kids */}
-          <Link
-            to="/products?category=kids"
-            className={`${styles.navLink} ${
-              location.pathname === '/products' && query.get('category') === 'kids'
-                ? styles.active
-                : ''
-            }`}
-          >
-            <FontAwesomeIcon icon={faChild} />
-            <span>Happy Kids</span>
-          </Link>
-
-          {/* Under ₹300 */}
-          <Link
-            to="/products?maxPrice=300"
-            className={`${styles.navLink} ${
-              location.pathname === '/products' && query.get('maxPrice') === '300'
-                ? styles.active
-                : ''
-            }`}
-          >
-            <FontAwesomeIcon icon={faTags} />
-            <span>Under ₹300</span>
-          </Link>
-
-          {/* Products (regular) */}
-          <Link
-            to="/products"
-            className={`${styles.navLink} ${
-              location.pathname === '/products' &&
-              !query.get('maxPrice') &&
-              !query.get('category')
-                ? styles.active
-                : ''
-            }`}
-          >
-            <FontAwesomeIcon icon={faStore} />
-            <span>Products</span>
-          </Link>
-
-          {/* Contact */}
-          <Link
-            to="/contact"
-            className={`${styles.navLink} ${location.pathname === '/contact' ? styles.active : ''}`}
-          >
-            <FontAwesomeIcon icon={faEnvelope} />
-            <span>Contact</span>
-          </Link>
-
-          {/* Admin links (only if admin) */}
-          {isAdmin && (
+          {/* 🟢 If admin is logged in, show only admin links */}
+          {isAdmin ? (
             <>
               <Link
                 to="/admin/dashboard"
@@ -149,6 +89,63 @@ const Navbar = () => {
               >
                 <FontAwesomeIcon icon={faPlus} />
                 <span>Add Category</span>
+              </Link>
+            </>
+          ) : (
+            // 🔵 Otherwise show public links
+            <>
+              <Link
+                to="/"
+                className={`${styles.navLink} ${location.pathname === '/' ? styles.active : ''}`}
+              >
+                <FontAwesomeIcon icon={faHome} />
+                <span>Home</span>
+              </Link>
+
+              <Link
+                to="/products?category=kids"
+                className={`${styles.navLink} ${
+                  location.pathname === '/products' && query.get('category') === 'kids'
+                    ? styles.active
+                    : ''
+                }`}
+              >
+                <FontAwesomeIcon icon={faChild} />
+                <span>Happy Kids</span>
+              </Link>
+
+              <Link
+                to="/products?maxPrice=300"
+                className={`${styles.navLink} ${
+                  location.pathname === '/products' && query.get('maxPrice') === '300'
+                    ? styles.active
+                    : ''
+                }`}
+              >
+                <FontAwesomeIcon icon={faTags} />
+                <span>Under ₹300</span>
+              </Link>
+
+              <Link
+                to="/products"
+                className={`${styles.navLink} ${
+                  location.pathname === '/products' &&
+                  !query.get('maxPrice') &&
+                  !query.get('category')
+                    ? styles.active
+                    : ''
+                }`}
+              >
+                <FontAwesomeIcon icon={faStore} />
+                <span>Products</span>
+              </Link>
+
+              <Link
+                to="/contact"
+                className={`${styles.navLink} ${location.pathname === '/contact' ? styles.active : ''}`}
+              >
+                <FontAwesomeIcon icon={faEnvelope} />
+                <span>Contact</span>
               </Link>
             </>
           )}

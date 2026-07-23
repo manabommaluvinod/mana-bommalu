@@ -30,7 +30,6 @@ const BottomNav = () => {
     const user = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (user) {
       const userData = JSON.parse(user);
-      // ✅ Fixed: admin only when is_admin === true
       setIsAdmin(userData.is_admin === true);
       setIsLoggedIn(true);
     } else {
@@ -62,63 +61,8 @@ const BottomNav = () => {
 
   return (
     <div className={styles.bottomNav}>
-      {/* Home */}
-      <Link
-        to="/"
-        className={`${styles.navItem} ${location.pathname === '/' ? styles.active : ''}`}
-      >
-        <FontAwesomeIcon icon={faHome} className={styles.icon} />
-        <span className={styles.label}>Home</span>
-      </Link>
-
-      {/* Happy Kids */}
-      <Link
-        to="/products?category=kids"
-        className={`${styles.navItem} ${
-          isActive('/products', { category: 'kids' }) ? styles.active : ''
-        }`}
-      >
-        <FontAwesomeIcon icon={faChild} className={styles.icon} />
-        <span className={styles.label}>Kids</span>
-      </Link>
-
-      {/* Under ₹300 */}
-      <Link
-        to="/products?maxPrice=300"
-        className={`${styles.navItem} ${
-          isActive('/products', { maxPrice: '300' }) ? styles.active : ''
-        }`}
-      >
-        <FontAwesomeIcon icon={faTags} className={styles.icon} />
-        <span className={styles.label}>Under ₹300</span>
-      </Link>
-
-      {/* Products (regular) */}
-      <Link
-        to="/products"
-        className={`${styles.navItem} ${
-          location.pathname === '/products' &&
-          !query.get('maxPrice') &&
-          !query.get('category')
-            ? styles.active
-            : ''
-        }`}
-      >
-        <FontAwesomeIcon icon={faStore} className={styles.icon} />
-        <span className={styles.label}>Products</span>
-      </Link>
-
-      {/* Contact */}
-      <Link
-        to="/contact"
-        className={`${styles.navItem} ${location.pathname === '/contact' ? styles.active : ''}`}
-      >
-        <FontAwesomeIcon icon={faEnvelope} className={styles.icon} />
-        <span className={styles.label}>Contact</span>
-      </Link>
-
-      {/* Admin links (only if admin) */}
-      {isAdmin && (
+      {/* 🟢 If admin is logged in, show only admin links */}
+      {isAdmin ? (
         <>
           <Link
             to="/admin/dashboard"
@@ -148,9 +92,62 @@ const BottomNav = () => {
             <span className={styles.label}>Category</span>
           </Link>
         </>
+      ) : (
+        // 🔵 Public links (shown when not admin – i.e., logged out or regular user)
+        <>
+          <Link
+            to="/"
+            className={`${styles.navItem} ${location.pathname === '/' ? styles.active : ''}`}
+          >
+            <FontAwesomeIcon icon={faHome} className={styles.icon} />
+            <span className={styles.label}>Home</span>
+          </Link>
+
+          <Link
+            to="/products?category=kids"
+            className={`${styles.navItem} ${
+              isActive('/products', { category: 'kids' }) ? styles.active : ''
+            }`}
+          >
+            <FontAwesomeIcon icon={faChild} className={styles.icon} />
+            <span className={styles.label}>Kids</span>
+          </Link>
+
+          <Link
+            to="/products?maxPrice=300"
+            className={`${styles.navItem} ${
+              isActive('/products', { maxPrice: '300' }) ? styles.active : ''
+            }`}
+          >
+            <FontAwesomeIcon icon={faTags} className={styles.icon} />
+            <span className={styles.label}>Under ₹300</span>
+          </Link>
+
+          <Link
+            to="/products"
+            className={`${styles.navItem} ${
+              location.pathname === '/products' &&
+              !query.get('maxPrice') &&
+              !query.get('category')
+                ? styles.active
+                : ''
+            }`}
+          >
+            <FontAwesomeIcon icon={faStore} className={styles.icon} />
+            <span className={styles.label}>Products</span>
+          </Link>
+
+          <Link
+            to="/contact"
+            className={`${styles.navItem} ${location.pathname === '/contact' ? styles.active : ''}`}
+          >
+            <FontAwesomeIcon icon={faEnvelope} className={styles.icon} />
+            <span className={styles.label}>Contact</span>
+          </Link>
+        </>
       )}
 
-      {/* Login / Logout */}
+      {/* Login / Logout – always visible */}
       {!isLoggedIn ? (
         <Link
           to="/login"
