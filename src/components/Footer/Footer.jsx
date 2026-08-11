@@ -91,13 +91,7 @@ const Footer = ({ isHomePage }) => {
           <Link to="/contact">Contact</Link>
         </div>
 
-        {/* Contact Info */}
-        <div className={styles.mobileContact}>
-          <h4>Contact Us</h4>
-          <p><FontAwesomeIcon icon={faPhone} /> +91 9014255912</p>
-          <p><FontAwesomeIcon icon={faEnvelope} /> vinod@manabommalu.store</p>
-          <p><FontAwesomeIcon icon={faMapMarkerAlt} /> Etikoppaka, AP</p>
-        </div>
+        
 
         {/* Social Icons */}
         <div className={styles.mobileSocial}>

@@ -1,68 +1,101 @@
-/* ========== DESKTOP DASHBOARD STYLES ========== */
+/* ============================================================
+   ROOT VARIABLES – consistent theming
+   ============================================================ */
+:root {
+  --gold: #c9a96e;
+  --gold-light: #e8dcc8;
+  --gold-dark: #b8924f;
+  --dark: #1a1a2e;
+  --dark-light: #16213e;
+  --bg: #f8f6f0;
+  --card-bg: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #5a4a3a;
+  --text-muted: #8b7d6e;
+  --border: #e8dcc8;
+  --shadow: 0 4px 20px rgba(0,0,0,0.06);
+  --radius: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   RESETS & BASE
+   ============================================================ */
+* { box-sizing: border-box; }
+
+body { background: var(--bg); }
+
+/* ============================================================
+   DESKTOP LAYOUTS
+   ============================================================ */
+.desktopAdminProducts,
 .desktopAdminDashboard {
-  background: #F8F7F4;
+  background: var(--bg);
   min-height: 100vh;
   padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .desktopHeader {
-  background: white;
+  background: var(--card-bg);
   padding: 1.5rem 2rem;
-  border-radius: 20px;
+  border-radius: var(--radius);
   margin-bottom: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #E8DCC8;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
 .desktopHeader h1 {
-  color: #1a1a2e;
   font-size: 1.8rem;
-  margin-bottom: 0.3rem;
+  color: var(--text-primary);
+  margin: 0 0 0.3rem;
 }
 
 .desktopHeader p {
-  color: #8B7D6E;
-  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0;
 }
 
 .refreshBtn {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: white;
+  background: linear-gradient(135deg, var(--dark), var(--dark-light));
+  color: #fff;
   border: none;
   padding: 0.7rem 1.5rem;
-  border-radius: 12px;
+  border-radius: 30px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-weight: 500;
 }
-
 .refreshBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(26, 26, 46, 0.3);
+  box-shadow: 0 6px 20px rgba(26,26,46,0.3);
 }
 
-/* Stats Grid */
+/* ---- Stats Grid ---- */
 .desktopStatsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .desktopStatCard {
-  background: white;
+  background: var(--card-bg);
   padding: 1.5rem;
-  border-radius: 20px;
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: all 0.3s ease;
-  border: 1px solid #E8DCC8;
+  border: 1px solid var(--border);
+  transition: var(--transition);
   position: relative;
   overflow: hidden;
 }
@@ -74,79 +107,80 @@
   left: 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(135deg, #C9A96E, #B8924F);
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
 }
 
 .desktopStatCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
 }
 
 .statIcon {
-  width: 55px;
-  height: 55px;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  border-radius: 16px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--dark), var(--dark-light));
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  color: #C9A96E;
+  color: var(--gold);
+  font-size: 1.4rem;
 }
 
 .statInfo h3 {
-  color: #8B7D6E;
+  color: var(--text-muted);
   font-size: 0.85rem;
-  margin-bottom: 0.3rem;
+  margin: 0 0 0.2rem;
+  font-weight: 500;
 }
-
 .statNumber {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--text-primary);
+  margin: 0;
 }
 
 .unreadBadge {
   display: inline-block;
-  background: #FF9800;
-  color: white;
-  padding: 0.2rem 0.6rem;
+  background: #f44336;
+  color: #fff;
+  padding: 0.1rem 0.6rem;
   border-radius: 20px;
   font-size: 0.7rem;
   margin-left: 0.5rem;
 }
 
-/* Quick Actions */
+/* ---- Quick Actions ---- */
 .desktopQuickActions {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 20px;
+  background: var(--card-bg);
+  padding: 1.5rem 2rem;
+  border-radius: var(--radius);
   margin-bottom: 2rem;
-  border: 1px solid #E8DCC8;
+  border: 1px solid var(--border);
 }
 
 .desktopQuickActions h2 {
-  color: #1a1a2e;
   font-size: 1.2rem;
-  margin-bottom: 1rem;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
 }
 
 .actionButtons {
   display: flex;
-  gap: 1rem;
+  gap: 0.8rem;
   flex-wrap: wrap;
 }
 
 .actionBtn {
-  background: #F8F7F4;
-  color: #1a1a2e;
-  border: 1px solid #E8DCC8;
-  padding: 0.7rem 1.5rem;
-  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 0.6rem 1.4rem;
+  border-radius: 30px;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -154,72 +188,68 @@
 }
 
 .actionBtn:hover {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: white;
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--dark), var(--dark-light));
+  color: #fff;
   border-color: transparent;
+  transform: translateY(-2px);
 }
 
 .actionBtn.active {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: white;
+  background: linear-gradient(135deg, var(--dark), var(--dark-light));
+  color: #fff;
 }
 
 .notificationBadge {
   background: #f44336;
-  color: white;
+  color: #fff;
   border-radius: 50%;
-  padding: 0.2rem 0.5rem;
+  padding: 0.1rem 0.5rem;
   font-size: 0.7rem;
-  margin-left: 0.5rem;
+  margin-left: 0.4rem;
 }
 
-/* Messages Section */
+/* ---- Messages ---- */
 .desktopMessagesSection {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 20px;
+  background: var(--card-bg);
+  padding: 1.5rem 2rem;
+  border-radius: var(--radius);
   margin-bottom: 2rem;
-  border: 1px solid #E8DCC8;
+  border: 1px solid var(--border);
 }
 
 .desktopMessagesSection h2 {
-  color: #1a1a2e;
   font-size: 1.2rem;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem;
 }
 
 .messageCard {
-  border: 1px solid #E8DCC8;
-  border-radius: 16px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background: #FDFBF8;
-  transition: all 0.3s ease;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  background: #fdfbf8;
+  transition: var(--transition);
 }
 
 .messageCard.unread {
-  background: #FFF9F0;
-  border-left: 4px solid #C9A96E;
+  background: #fff9f0;
+  border-left: 4px solid var(--gold);
 }
 
 .messageHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.8rem;
   flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.messageHeader strong {
-  color: #1a1a2e;
-  font-size: 1rem;
-}
-
+.messageHeader strong { color: var(--text-primary); }
 .messageEmail {
-  color: #8B7D6E;
-  font-size: 0.8rem;
-  margin-left: 1rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-left: 0.8rem;
 }
 
 .messageActions {
@@ -228,88 +258,71 @@
 }
 
 .readBtn, .deleteBtn {
-  padding: 0.3rem 0.8rem;
+  padding: 0.2rem 0.8rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 0.75rem;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
 }
-
-.readBtn {
-  background: #4CAF50;
-  color: white;
-}
-
-.readBtn:hover {
-  background: #45a049;
-}
-
-.deleteBtn {
-  background: #f44336;
-  color: white;
-}
-
-.deleteBtn:hover {
-  background: #da190b;
-}
+.readBtn { background: #4caf50; color: #fff; }
+.readBtn:hover { background: #388e3c; }
+.deleteBtn { background: #f44336; color: #fff; }
+.deleteBtn:hover { background: #d32f2f; }
 
 .messageSubject {
-  margin-bottom: 0.5rem;
-  color: #5A4A3A;
-  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
 }
-
 .messageContent {
-  color: #5A4A3A;
+  color: var(--text-secondary);
   line-height: 1.5;
-  margin-bottom: 0.5rem;
-  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
 }
-
 .messageDate {
-  font-size: 0.7rem;
-  color: #8B7D6E;
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
-/* Recent Products */
+/* ---- Recent Products Table ---- */
 .desktopRecentProducts {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 20px;
-  border: 1px solid #E8DCC8;
+  background: var(--card-bg);
+  padding: 1.5rem 2rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
 }
 
 .desktopRecentProducts h2 {
-  color: #1a1a2e;
   font-size: 1.2rem;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem;
 }
 
-.productsTable {
+.productsTableWrapper {
   overflow-x: auto;
 }
 
-.productsTable table {
+table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 0.9rem;
 }
-
-.productsTable th,
-.productsTable td {
-  padding: 1rem;
+th {
   text-align: left;
-  border-bottom: 1px solid #E8DCC8;
+  padding: 0.8rem 0.5rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  border-bottom: 2px solid var(--border);
 }
-
-.productsTable th {
-  background: #F8F7F4;
-  color: #1a1a2e;
-  font-weight: 600;
-  font-size: 0.85rem;
+td {
+  padding: 0.8rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
 }
 
 .productThumb {
@@ -317,69 +330,40 @@
   height: 50px;
   object-fit: cover;
   border-radius: 10px;
+  background: var(--bg);
 }
 
 .statusBadge {
-  padding: 0.25rem 0.7rem;
+  padding: 0.2rem 0.8rem;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
 }
-
-.inStock {
-  background: #E8F5E9;
-  color: #2E7D32;
+.inStock { background: #e8f5e9; color: #2e7d32; }
+.outStock { background: #ffebee; color: #c62828; }
+.variantBadge {
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  color: #fff;
 }
 
-.outStock {
-  background: #FFEBEE;
-  color: #C62828;
-}
-
-/* ========== DESKTOP PRODUCTS STYLES ========== */
-.desktopAdminProducts {
-  background: #F8F7F4;
-  min-height: 100vh;
-  padding: 2rem;
-}
-
-.addBtn {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: white;
-  border: none;
-  padding: 0.8rem 1.8rem;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.addBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(26, 26, 46, 0.3);
-}
-
+/* ---- Product Form (Desktop) ---- */
 .productForm {
-  background: white;
+  background: var(--card-bg);
   padding: 2rem;
-  border-radius: 20px;
+  border-radius: var(--radius);
   margin-bottom: 2rem;
-  border: 1px solid #E8DCC8;
+  border: 1px solid var(--border);
 }
 
 .productForm h2 {
-  color: #1a1a2e;
-  margin-bottom: 1.5rem;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  margin: 0 0 1.5rem;
 }
 
 .formGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
 }
 
@@ -387,84 +371,66 @@
   display: flex;
   flex-direction: column;
 }
-
 .formGroup label {
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
   font-weight: 500;
-  font-size: 0.85rem;
-}
-
-.formGroup input,
-.formGroup textarea {
-  padding: 0.8rem;
-  border: 1px solid #E8DCC8;
-  border-radius: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
   font-size: 0.9rem;
-  font-family: inherit;
-  transition: all 0.3s ease;
-  background: #FDFBF8;
 }
-.formGroup select {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #E8DCC8;
-  border-radius: 12px;
-  font-size: 14px;
-  background-color: #FDFBF8;
-  outline: none;
-  appearance: none; /* removes weird browser style */
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333'%3E%3Cpath d='M4 6l4 4 4-4z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background: #fdfbf8;
+  transition: var(--transition);
+  font-family: inherit;
 }
 .formGroup input:focus,
+.formGroup select:focus,
 .formGroup textarea:focus {
   outline: none;
-  border-color: #C9A96E;
-  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.1);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,169,110,0.15);
 }
+.formGroup textarea { resize: vertical; min-height: 80px; }
 
-.fullWidth {
-  grid-column: span 2;
-}
+.fullWidth { grid-column: 1 / -1; }
 
+/* ---- Image Upload ---- */
 .imageUploadArea {
-  border: 2px dashed #E8DCC8;
-  border-radius: 16px;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
   padding: 1.5rem;
   text-align: center;
-  background: #FDFBF8;
+  background: #fdfbf8;
 }
-
 .imagePreviewGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(80px,1fr));
+  gap: 0.8rem;
   margin-top: 1rem;
 }
-
 .imagePreview {
   position: relative;
   aspect-ratio: 1;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  border: 2px solid #E8DCC8;
+  border: 2px solid var(--border);
 }
-
 .imagePreview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .imagePreview button {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  background: rgba(244, 67, 54, 0.9);
-  color: white;
+  top: 4px;
+  right: 4px;
+  background: rgba(244,67,54,0.9);
+  color: #fff;
   border: none;
   border-radius: 50%;
   width: 24px;
@@ -473,391 +439,508 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 14px;
 }
 
+/* ---- Variant Rows ---- */
+.variantRow {
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 12px;
+  background: #fdfbf8;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.8rem;
+}
+.variantRow select,
+.variantRow input {
+  flex: 1 1 120px;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+.variantRow > div {
+  flex: 1 1 100%;
+  margin-top: 0.5rem;
+}
+.variantRow > div label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+.variantImages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.variantImages span {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.variantImages img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.variantImages button {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.variantRow > button {
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.addVariantBtn {
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+}
+.addVariantBtn:hover { background: var(--gold-dark); }
+
+/* ---- Form Actions ---- */
 .formActions {
   display: flex;
   gap: 1rem;
   margin-top: 2rem;
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .saveBtn, .cancelBtn {
-  padding: 0.8rem 1.8rem;
+  padding: 0.7rem 1.8rem;
   border: none;
-  border-radius: 12px;
-  font-size: 0.9rem;
+  border-radius: 30px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
-
 .saveBtn {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: white;
+  background: linear-gradient(135deg, var(--dark), var(--dark-light));
+  color: #fff;
 }
-
 .saveBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(26, 26, 46, 0.3);
+  box-shadow: 0 6px 20px rgba(26,26,46,0.3);
 }
-
 .cancelBtn {
-  background: #F8F7F4;
-  color: #5A4A3A;
-  border: 1px solid #E8DCC8;
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
 }
+.cancelBtn:hover { background: #e8e2da; }
 
-.cancelBtn:hover {
-  background: #EEECE8;
+/* ---- Product Table (AdminProducts list) ---- */
+.productsTable {
+  background: var(--card-bg);
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow-x: auto;
 }
+.productsTable table {
+  width: 100%;
+  font-size: 0.9rem;
+}
+.productsTable th {
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 0.8rem;
+}
+.productsTable td { padding: 0.8rem; }
 
 .editBtn, .deleteBtn {
-  padding: 0.4rem 0.8rem;
-  margin: 0 0.25rem;
+  padding: 0.3rem 0.8rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.75rem;
-  transition: all 0.3s ease;
+  transition: var(--transition);
+  margin: 0 0.2rem;
+}
+.editBtn { background: #2196f3; color: #fff; }
+.editBtn:hover { background: #1976d2; }
+.deleteBtn { background: #f44336; color: #fff; }
+.deleteBtn:hover { background: #d32f2f; }
+
+.addBtn {
+  background: linear-gradient(135deg, var(--dark), var(--dark-light));
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.8rem;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.5rem;
+}
+.addBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(26,26,46,0.3);
 }
 
-.editBtn {
-  background: #2196F3;
-  color: white;
-}
-
-.editBtn:hover {
-  background: #0b7dda;
-}
-
-.deleteBtn {
-  background: #f44336;
-  color: white;
-}
-
-.deleteBtn:hover {
-  background: #da190b;
-}
-
-/* ========== MOBILE DASHBOARD STYLES ========== */
-.mobileAdminDashboard {
-  background: #F8F7F4;
+/* ============================================================
+   MOBILE LAYOUTS
+   ============================================================ */
+.mobileAdminDashboard,
+.mobileAdminProducts {
+  background: var(--bg);
   min-height: 100vh;
   padding: 1rem;
   padding-bottom: 80px;
 }
 
 .mobileHeader {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  padding: 1.5rem;
-  border-radius: 16px;
-  margin-bottom: 1rem;
-  color: white;
+  background: linear-gradient(135deg, var(--dark), var(--dark-light));
+  padding: 1.2rem 1.5rem;
+  border-radius: var(--radius);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
 .mobileHeader h1 {
-  font-size: 1.5rem;
-  margin-bottom: 0.3rem;
+  font-size: 1.4rem;
+  margin: 0;
 }
-
 .mobileHeader p {
   font-size: 0.8rem;
   opacity: 0.8;
+  margin: 0.2rem 0 0;
 }
 
+.mobileBackBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.mobileAddBtn {
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Mobile Stats ---- */
 .mobileStatsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.8rem;
-  margin-bottom: 1rem;
+  margin: 1rem 0;
 }
 
 .mobileStatCard {
-  background: white;
-  padding: 1rem;
-  border-radius: 16px;
+  background: var(--card-bg);
+  padding: 0.9rem;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  border: 1px solid #E8DCC8;
+  border: 1px solid var(--border);
 }
-
 .mobileStatCard svg {
-  font-size: 1.5rem;
-  color: #C9A96E;
+  font-size: 1.6rem;
+  color: var(--gold);
 }
-
 .mobileStatCard div {
   display: flex;
   flex-direction: column;
 }
-
 .mobileStatNumber {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--text-primary);
 }
-
 .mobileStatLabel {
   font-size: 0.7rem;
-  color: #8B7D6E;
+  color: var(--text-muted);
 }
-
 .mobileUnreadBadge {
-  background: #FF9800;
-  color: white;
-  border-radius: 50%;
-  padding: 0.1rem 0.4rem;
+  background: #f44336;
+  color: #fff;
+  border-radius: 20px;
+  padding: 0.1rem 0.6rem;
   font-size: 0.6rem;
   margin-left: 0.3rem;
 }
 
+/* ---- Mobile Actions ---- */
 .mobileActions {
-  display: flex;
-  gap: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  gap: 0.6rem;
   margin-bottom: 1rem;
 }
 
 .mobileActionBtn {
-  flex: 1;
-  background: white;
-  border: 1px solid #E8DCC8;
-  padding: 0.7rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.2rem;
   border-radius: 12px;
   text-align: center;
   text-decoration: none;
-  color: #1a1a2e;
-  font-size: 0.8rem;
+  color: var(--text-primary);
+  font-size: 0.75rem;
   font-weight: 500;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  gap: 0.2rem;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.mobileActionBtn.active {
+  background: var(--dark);
+  color: #fff;
+  border-color: var(--dark);
+}
+.mobileActionBtn svg { font-size: 1.2rem; }
+.notificationDot {
+  background: #f44336;
+  color: #fff;
+  border-radius: 50%;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.6rem;
+  margin-left: 0.2rem;
 }
 
+/* ---- Mobile Messages ---- */
 .mobileMessages {
-  background: white;
+  background: var(--card-bg);
   padding: 1rem;
-  border-radius: 16px;
+  border-radius: var(--radius);
   margin-bottom: 1rem;
-  border: 1px solid #E8DCC8;
+  border: 1px solid var(--border);
 }
-
 .mobileMessages h3 {
   font-size: 1rem;
-  margin-bottom: 1rem;
-  color: #1a1a2e;
+  margin: 0 0 0.8rem;
 }
-
 .mobileMessageCard {
-  border: 1px solid #E8DCC8;
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
   padding: 0.8rem;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.6rem;
 }
-
 .mobileMessageCard.unread {
-  background: #FFF9F0;
-  border-left: 3px solid #C9A96E;
+  background: #fff9f0;
+  border-left: 3px solid var(--gold);
 }
-
 .mobileMessageHeader {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.mobileMessageHeader strong {
   font-size: 0.85rem;
-  color: #1a1a2e;
 }
-
-.mobileMessageHeader span {
-  font-size: 0.7rem;
-  color: #8B7D6E;
-}
-
+.mobileMessageHeader strong { color: var(--text-primary); }
+.mobileMessageHeader span { color: var(--text-muted); font-size: 0.75rem; }
 .mobileMessageContent {
-  font-size: 0.75rem;
-  color: #5A4A3A;
-  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0.4rem 0;
 }
-
 .mobileMessageActions {
   display: flex;
   gap: 0.5rem;
 }
-
 .mobileMessageActions button {
-  padding: 0.2rem 0.6rem;
   border: none;
-  border-radius: 6px;
+  background: none;
+  color: var(--gold);
   font-size: 0.7rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
 }
+.mobileMessageActions button:hover { background: var(--bg); }
+.mobileMessageActions button:last-child { color: #f44336; }
 
+/* ---- Mobile Products List ---- */
 .mobileProducts {
-  background: white;
+  background: var(--card-bg);
   padding: 1rem;
-  border-radius: 16px;
-  border: 1px solid #E8DCC8;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
 }
-
 .mobileProducts h3 {
   font-size: 1rem;
-  margin-bottom: 1rem;
-  color: #1a1a2e;
+  margin: 0 0 0.8rem;
 }
-
 .mobileProductCard {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  padding: 0.8rem;
-  border-bottom: 1px solid #E8DCC8;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
 }
-
-.mobileProductCard:last-child {
-  border-bottom: none;
-}
-
+.mobileProductCard:last-child { border-bottom: none; }
 .mobileProductCard img {
-  width: 50px;
-  height: 50px;
+  width: 55px;
+  height: 55px;
   object-fit: cover;
   border-radius: 10px;
 }
-
 .mobileProductCard h4 {
-  font-size: 0.85rem;
-  color: #1a1a2e;
-  margin-bottom: 0.2rem;
+  font-size: 0.9rem;
+  margin: 0 0 0.2rem;
 }
-
 .mobileProductCard p {
-  font-size: 0.7rem;
-  color: #8B7D6E;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+.mobileVariantBadge {
+  display: inline-block;
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  color: #fff;
+  padding: 0.1rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  margin-top: 0.2rem;
 }
 
-/* ========== MOBILE PRODUCTS STYLES ========== */
-.mobileAdminProducts {
-  background: #F8F7F4;
-  min-height: 100vh;
-  padding: 1rem;
-  padding-bottom: 80px;
+/* ---- Mobile Product List (for AdminProducts) ---- */
+.mobileProductsList {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
 }
-
-.mobileAddBtn {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: white;
-  border: none;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
+.mobileProductItem {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+.mobileProductItem:last-child { border-bottom: none; }
+.mobileProductItem img {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.mobileProductDetails {
+  flex: 1;
+}
+.mobileProductDetails h4 {
+  font-size: 0.85rem;
+  margin: 0 0 0.2rem;
+}
+.mobileProductDetails p {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin: 0.2rem 0;
+}
+.mobileStatus {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+.mobileProductActions {
+  display: flex;
+  gap: 0.5rem;
+}
+.mobileProductActions button {
+  background: none;
+  border: none;
+  font-size: 1rem;
   cursor: pointer;
+  padding: 0.3rem;
+  color: var(--text-muted);
+  transition: var(--transition);
 }
+.mobileProductActions button:hover { color: var(--gold); }
 
+/* ---- Mobile Form ---- */
 .mobileForm {
-  background: white;
+  background: var(--card-bg);
   padding: 1rem;
-  border-radius: 16px;
-  margin-bottom: 1rem;
+  border-radius: var(--radius);
+  margin-top: 1rem;
 }
-
 .mobileForm h2 {
   font-size: 1.2rem;
-  margin-bottom: 1rem;
-  color: #1a1a2e;
+  margin: 0 0 1rem;
 }
-
 .mobileForm input,
-.mobileForm textarea,
-.mobileForm select {
+.mobileForm select,
+.mobileForm textarea {
   width: 100%;
-  padding: 0.8rem;
-  border: 1px solid #E8DCC8;
-  border-radius: 12px;
+  padding: 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
   margin-bottom: 0.8rem;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  background: #fdfbf8;
 }
-
-.mobileImageUpload {
-  margin-bottom: 1rem;
-}
-
-.mobileImageUpload label {
+.mobileForm textarea { resize: vertical; }
+.mobileForm label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.8rem;
-  background: #F8F7F4;
-  border-radius: 12px;
-  cursor: pointer;
+  font-size: 0.9rem;
   margin-bottom: 0.5rem;
 }
-
-.mobileImageUpload input {
-  display: none;
-}
-
-.mobileImagePreview {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.mobilePreviewItem {
-  position: relative;
-  width: 70px;
-  height: 70px;
-}
-
-.mobilePreviewItem img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.mobilePreviewItem button {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  font-size: 10px;
-}
-
 .mobileFormActions {
   display: flex;
   gap: 0.8rem;
+  margin-top: 0.5rem;
 }
-
 .mobileFormActions button {
   flex: 1;
-  padding: 0.8rem;
+  padding: 0.7rem;
   border: none;
-  border-radius: 12px;
-  font-size: 0.85rem;
+  border-radius: 30px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -866,63 +949,60 @@
   gap: 0.3rem;
 }
 
-.mobileProductsList {
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
+.mobileImageUpload {
+  margin: 0.5rem 0;
 }
-
-.mobileProductItem {
+.mobileImageUpload label {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  padding: 1rem;
-  border-bottom: 1px solid #E8DCC8;
-}
-
-.mobileProductItem img {
-  width: 55px;
-  height: 55px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.mobileProductDetails {
-  flex: 1;
-}
-
-.mobileProductDetails h4 {
-  font-size: 0.85rem;
-  color: #1a1a2e;
-  margin-bottom: 0.2rem;
-}
-
-.mobileProductDetails p {
-  font-size: 0.7rem;
-  color: #8B7D6E;
-  margin-bottom: 0.2rem;
-}
-
-.mobileStatus {
-  font-size: 0.65rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 20px;
-}
-
-.mobileProductActions {
-  display: flex;
   gap: 0.5rem;
-}
-
-.mobileProductActions button {
-  background: none;
-  border: none;
-  font-size: 1rem;
+  padding: 0.6rem;
+  background: var(--bg);
+  border-radius: 10px;
   cursor: pointer;
-  padding: 0.3rem;
+}
+.mobileImageUpload input { display: none; }
+.mobileImagePreview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.mobilePreviewItem {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+.mobilePreviewItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.mobilePreviewItem button {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 12px;
 }
 
-/* ========== RESPONSIVE ========== */
+/* ---- Loading / Empty ---- */
+.loading, .noData, .emptyState {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
 @media (max-width: 768px) {
   .desktopAdminDashboard,
   .desktopAdminProducts {
@@ -939,19 +1019,17 @@
 
 @media (max-width: 480px) {
   .mobileStatsGrid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
   }
-  
-  .mobileStatCard {
-    padding: 0.7rem;
+  .mobileStatCard { padding: 0.6rem; }
+  .mobileStatNumber { font-size: 1.1rem; }
+  .mobileActionBtn { font-size: 0.65rem; padding: 0.4rem; }
+}
+
+@media (max-width: 992px) {
+  .formGrid {
+    grid-template-columns: 1fr;
   }
-  
-  .mobileStatNumber {
-    font-size: 1rem;
-  }
-  
-  .mobileActionBtn {
-    font-size: 0.7rem;
-    padding: 0.6rem;
-  }
+  .fullWidth { grid-column: 1; }
 }

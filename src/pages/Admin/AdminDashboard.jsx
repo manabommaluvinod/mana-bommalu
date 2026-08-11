@@ -1,3 +1,4 @@
+// src/pages/Admin/AdminDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
@@ -15,6 +16,9 @@ import {
   faTrash,
   faCheck,
   faChartLine,
+  faStore,
+  faTruck,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import styles from './Admin.module.css';
 
@@ -32,6 +36,37 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showMessages, setShowMessages] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // ----- Helper: check if product is a variant -----
+  const isVariantProduct = (product) => {
+    return product.has_variants === true || (product.variants && product.variants.length > 0);
+  };
+
+  // ----- Helper: display price (or 'Varies') -----
+  const displayPrice = (product) => {
+    if (isVariantProduct(product)) {
+      const prices = product.variants.map(v => Number(v.price)).filter(p => !isNaN(p) && p > 0);
+      if (prices.length === 0) return 'Varies';
+      const min = Math.min(...prices);
+      const max = Math.max(...prices);
+      return min === max ? `₹${min.toLocaleString()}` : `₹${min.toLocaleString()} – ₹${max.toLocaleString()}`;
+    }
+    return product.price ? `₹${product.price.toLocaleString()}` : 'N/A';
+  };
+
+  // ----- Helper: display quantity (or 'Varies') -----
+  const displayQuantity = (product) => {
+    if (isVariantProduct(product)) return 'Varies';
+    return product.quantity ?? 0;
+  };
+
+  // ----- Helper: get first image or fallback -----
+  const getFirstImage = (product) => {
+    if (product.images && product.images.length) {
+      return product.images[0];
+    }
+    return 'https://placehold.co/50';
+  };
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -70,8 +105,11 @@ const AdminDashboard = () => {
 
     if (products) {
       const categories = [...new Set(products.map((p) => p.category))];
-      const lowStock = products.filter((p) => p.quantity > 0 && p.quantity < 10).length;
-      const outOfStock = products.filter((p) => p.quantity === 0).length;
+
+      // Only count stock for non‑variant products
+      const nonVariant = products.filter(p => !isVariantProduct(p));
+      const lowStock = nonVariant.filter((p) => p.quantity > 0 && p.quantity < 10).length;
+      const outOfStock = nonVariant.filter((p) => p.quantity === 0).length;
 
       setStats({
         totalProducts: products.length,
@@ -106,79 +144,83 @@ const AdminDashboard = () => {
     }
   };
 
-  // ─────────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────
   //  MOBILE VIEW
-  // ─────────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────
   if (isMobile) {
     return (
-      <div className={styles.mobileContainer}>
-        <header className={styles.mobileHeader}>
-          <h1>Admin Dashboard</h1>
+      <div className={styles.mobileAdminDashboard}>
+        {/* Header */}
+        <div className={styles.mobileHeader}>
+          <h1>Dashboard</h1>
           <p>Welcome back! 👋</p>
-        </header>
+        </div>
 
+        {/* Stats – 2‑column grid */}
         <div className={styles.mobileStatsGrid}>
           <div className={styles.mobileStatCard}>
-            <FontAwesomeIcon icon={faBox} className={styles.statIconMobile} />
+            <FontAwesomeIcon icon={faBox} />
             <div>
               <span className={styles.mobileStatNumber}>{stats.totalProducts}</span>
               <span className={styles.mobileStatLabel}>Products</span>
             </div>
           </div>
           <div className={styles.mobileStatCard}>
-            <FontAwesomeIcon icon={faTags} className={styles.statIconMobile} />
+            <FontAwesomeIcon icon={faTags} />
             <div>
               <span className={styles.mobileStatNumber}>{stats.totalCategories}</span>
               <span className={styles.mobileStatLabel}>Categories</span>
             </div>
           </div>
           <div className={styles.mobileStatCard}>
-            <FontAwesomeIcon icon={faExclamationTriangle} className={styles.statIconMobile} />
+            <FontAwesomeIcon icon={faExclamationTriangle} />
             <div>
               <span className={styles.mobileStatNumber}>{stats.lowStock}</span>
               <span className={styles.mobileStatLabel}>Low Stock</span>
             </div>
           </div>
           <div className={styles.mobileStatCard}>
-            <FontAwesomeIcon icon={faTimesCircle} className={styles.statIconMobile} />
+            <FontAwesomeIcon icon={faTimesCircle} />
             <div>
               <span className={styles.mobileStatNumber}>{stats.outOfStock}</span>
               <span className={styles.mobileStatLabel}>Out of Stock</span>
             </div>
           </div>
-          <div className={styles.mobileStatCard}>
-            <FontAwesomeIcon icon={faEnvelope} className={styles.statIconMobile} />
+          <div className={styles.mobileStatCard} style={{ gridColumn: 'span 2' }}>
+            <FontAwesomeIcon icon={faEnvelope} />
             <div>
               <span className={styles.mobileStatNumber}>{stats.totalMessages}</span>
               <span className={styles.mobileStatLabel}>Messages</span>
               {stats.unreadMessages > 0 && (
-                <span className={styles.mobileUnreadBadge}>{stats.unreadMessages}</span>
+                <span className={styles.mobileUnreadBadge}>{stats.unreadMessages} unread</span>
               )}
             </div>
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div className={styles.mobileActions}>
           <Link to="/admin/products/new" className={styles.mobileActionBtn}>
-            <FontAwesomeIcon icon={faPlus} /> Add Product
+            <FontAwesomeIcon icon={faPlus} /> Add
           </Link>
           <Link to="/admin/products" className={styles.mobileActionBtn}>
             <FontAwesomeIcon icon={faEdit} /> Manage
           </Link>
           <Link to="/admin/categories" className={styles.mobileActionBtn}>
-            <FontAwesomeIcon icon={faPlus} /> Add Category
+            <FontAwesomeIcon icon={faTags} /> Categories
           </Link>
           <button
             onClick={() => setShowMessages(!showMessages)}
             className={`${styles.mobileActionBtn} ${showMessages ? styles.active : ''}`}
           >
-            <FontAwesomeIcon icon={faEnvelope} /> Messages
+            <FontAwesomeIcon icon={faEnvelope} />
             {stats.unreadMessages > 0 && !showMessages && (
               <span className={styles.notificationDot}>{stats.unreadMessages}</span>
             )}
           </button>
         </div>
 
+        {/* Messages */}
         {showMessages && (
           <div className={styles.mobileMessages}>
             <h3>Contact Messages</h3>
@@ -208,6 +250,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
+        {/* Recent Products */}
         <div className={styles.mobileProducts}>
           <h3>Recent Products</h3>
           {recentProducts.length === 0 ? (
@@ -215,10 +258,13 @@ const AdminDashboard = () => {
           ) : (
             recentProducts.map((product) => (
               <div key={product.id} className={styles.mobileProductCard}>
-                <img src={product.images[0] || 'https://placehold.co/50'} alt={product.name} />
+                <img src={getFirstImage(product)} alt={product.name} />
                 <div>
                   <h4>{product.name}</h4>
-                  <p>₹{product.price.toLocaleString()} | Stock: {product.quantity}</p>
+                  <p>{displayPrice(product)} | Stock: {displayQuantity(product)}</p>
+                  {isVariantProduct(product) && (
+                    <span className={styles.mobileVariantBadge}>Variant</span>
+                  )}
                 </div>
               </div>
             ))
@@ -228,12 +274,13 @@ const AdminDashboard = () => {
     );
   }
 
-  // ─────────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────
   //  DESKTOP VIEW
-  // ─────────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────
   return (
-    <div className={styles.desktopContainer}>
-      <header className={styles.desktopHeader}>
+    <div className={styles.desktopAdminDashboard}>
+      {/* Header */}
+      <div className={styles.desktopHeader}>
         <div>
           <h1>Admin Dashboard</h1>
           <p>Welcome back! Here's what's happening with your store today.</p>
@@ -241,40 +288,41 @@ const AdminDashboard = () => {
         <button onClick={fetchDashboardData} className={styles.refreshBtn}>
           <FontAwesomeIcon icon={faSync} /> Refresh
         </button>
-      </header>
+      </div>
 
+      {/* Stats Cards */}
       <div className={styles.desktopStatsGrid}>
         <div className={styles.desktopStatCard}>
-          <div className={styles.statIconDesktop}><FontAwesomeIcon icon={faBox} /></div>
-          <div>
+          <div className={styles.statIcon}><FontAwesomeIcon icon={faBox} /></div>
+          <div className={styles.statInfo}>
             <h3>Total Products</h3>
             <p className={styles.statNumber}>{stats.totalProducts}</p>
           </div>
         </div>
         <div className={styles.desktopStatCard}>
-          <div className={styles.statIconDesktop}><FontAwesomeIcon icon={faTags} /></div>
-          <div>
+          <div className={styles.statIcon}><FontAwesomeIcon icon={faTags} /></div>
+          <div className={styles.statInfo}>
             <h3>Categories</h3>
             <p className={styles.statNumber}>{stats.totalCategories}</p>
           </div>
         </div>
         <div className={styles.desktopStatCard}>
-          <div className={styles.statIconDesktop}><FontAwesomeIcon icon={faExclamationTriangle} /></div>
-          <div>
+          <div className={styles.statIcon}><FontAwesomeIcon icon={faExclamationTriangle} /></div>
+          <div className={styles.statInfo}>
             <h3>Low Stock</h3>
             <p className={styles.statNumber}>{stats.lowStock}</p>
           </div>
         </div>
         <div className={styles.desktopStatCard}>
-          <div className={styles.statIconDesktop}><FontAwesomeIcon icon={faTimesCircle} /></div>
-          <div>
+          <div className={styles.statIcon}><FontAwesomeIcon icon={faTimesCircle} /></div>
+          <div className={styles.statInfo}>
             <h3>Out of Stock</h3>
             <p className={styles.statNumber}>{stats.outOfStock}</p>
           </div>
         </div>
         <div className={styles.desktopStatCard}>
-          <div className={styles.statIconDesktop}><FontAwesomeIcon icon={faEnvelope} /></div>
-          <div>
+          <div className={styles.statIcon}><FontAwesomeIcon icon={faEnvelope} /></div>
+          <div className={styles.statInfo}>
             <h3>Messages</h3>
             <p className={styles.statNumber}>{stats.totalMessages}</p>
             {stats.unreadMessages > 0 && (
@@ -284,6 +332,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* Quick Actions */}
       <div className={styles.desktopQuickActions}>
         <h2>Quick Actions</h2>
         <div className={styles.actionButtons}>
@@ -291,7 +340,7 @@ const AdminDashboard = () => {
             <FontAwesomeIcon icon={faPlus} /> Add New Product
           </Link>
           <Link to="/admin/categories" className={styles.actionBtn}>
-            <FontAwesomeIcon icon={faPlus} /> Add New Category
+            <FontAwesomeIcon icon={faTags} /> Add Category
           </Link>
           <Link to="/admin/products" className={styles.actionBtn}>
             <FontAwesomeIcon icon={faEdit} /> Manage Products
@@ -309,6 +358,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* Messages Section */}
       {showMessages && (
         <div className={styles.desktopMessagesSection}>
           <h2>Contact Messages</h2>
@@ -346,6 +396,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
+      {/* Recent Products Table */}
       <div className={styles.desktopRecentProducts}>
         <h2>Recently Added Products</h2>
         {recentProducts.length === 0 ? (
@@ -368,23 +419,29 @@ const AdminDashboard = () => {
                   <tr key={product.id}>
                     <td>
                       <img
-                        src={product.images[0] || 'https://placehold.co/50'}
+                        src={getFirstImage(product)}
                         alt={product.name}
                         className={styles.productThumb}
                       />
                     </td>
                     <td>{product.name}</td>
                     <td>{product.category}</td>
-                    <td>₹{product.price.toLocaleString()}</td>
-                    <td>{product.quantity}</td>
+                    <td>{displayPrice(product)}</td>
+                    <td>{displayQuantity(product)}</td>
                     <td>
-                      <span
-                        className={`${styles.statusBadge} ${
-                          product.quantity > 0 ? styles.inStock : styles.outStock
-                        }`}
-                      >
-                        {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
-                      </span>
+                      {isVariantProduct(product) ? (
+                        <span className={`${styles.statusBadge} ${styles.variantBadge}`}>
+                          Variant
+                        </span>
+                      ) : (
+                        <span
+                          className={`${styles.statusBadge} ${
+                            product.quantity > 0 ? styles.inStock : styles.outStock
+                          }`}
+                        >
+                          {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}

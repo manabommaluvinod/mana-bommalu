@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'  // ← added useLocation
 import { supabase } from '../../lib/supabase'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faEdit, faTrash, faSave, faTimes, faUpload, faImage, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faEdit, faTrash, faSave, faTimes, faUpload, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import styles from './Admin.module.css'
 
 const AdminProducts = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()  // ← get location
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [editingProduct, setEditingProduct] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [categories, setCategories] = useState([])
+  const [hasVariants, setHasVariants] = useState(false)
+  const [variants, setVariants] = useState([])
+
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -22,34 +27,55 @@ const AdminProducts = () => {
     quantity: '',
     images: []
   })
-  const [categories, setCategories] = useState([])
+
+  // ---- Detect if we're on the "new" route ----
+  const isNewRoute = location.pathname.endsWith('/new')
+
+  console.log('AdminProducts rendering, id =', id, 'isNewRoute =', isNewRoute)
+
+  const resetForm = () => {
+    console.log('resetForm called')
+    setShowForm(false)
+    setEditingProduct(null)
+    setFormData({
+      name: '',
+      category: '',
+      price: '',
+      description: '',
+      quantity: '',
+      images: []
+    })
+    setHasVariants(false)
+    setVariants([])
+    navigate('/admin/products')
+  }
+
   const fetchCategories = async () => {
     const { data, error } = await supabase
       .from('categories')
       .select('*')
       .eq('is_active', true)
       .order('name', { ascending: true })
-
-    if (!error) {
-      setCategories(data || [])
-    }
+    if (!error) setCategories(data || [])
   }
 
   useEffect(() => {
+    console.log('useEffect triggered, id =', id, 'isNewRoute =', isNewRoute)
     const checkMobile = () => setIsMobile(window.innerWidth <= 768)
     checkMobile()
     window.addEventListener('resize', checkMobile)
+
     fetchProducts()
     fetchCategories()
 
-    // Real-time subscription
     const subscription = supabase
       .channel('products_channel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => fetchProducts())
       .subscribe()
 
-    // Check URL params for edit/new
-    if (id === 'new') {
+    // Determine mode based on route
+    if (isNewRoute) {
+      console.log('Mode: ADD NEW PRODUCT')
       setShowForm(true)
       setEditingProduct(null)
       setFormData({
@@ -60,31 +86,32 @@ const AdminProducts = () => {
         quantity: '',
         images: []
       })
-    } else if (id && id !== 'new' && id !== 'edit') {
-      // Handle edit - id is the product UUID
+      setHasVariants(false)
+      setVariants([])
+    } else if (id) {
+      console.log('Mode: EDIT PRODUCT, id =', id)
       fetchProductForEdit(id)
       setShowForm(true)
+    } else {
+      console.log('Mode: LIST VIEW')
+      setShowForm(false)
     }
 
     return () => {
       window.removeEventListener('resize', checkMobile)
       subscription.unsubscribe()
     }
-  }, [id])
+  }, [id, location.pathname])  // ← added location.pathname as dependency
 
   const fetchProducts = async () => {
     setLoading(true)
-    const { data } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false })
-
+    const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false })
     setProducts(data || [])
     setLoading(false)
   }
 
   const fetchProductForEdit = async (productId) => {
-    console.log('Fetching product for edit:', productId)
+    console.log('fetchProductForEdit called with id', productId)
     const { data, error } = await supabase
       .from('products')
       .select('*')
@@ -93,7 +120,7 @@ const AdminProducts = () => {
 
     if (error) {
       console.error('Error fetching product:', error)
-      alert('Error loading product for editing')
+      alert('Error loading product')
       navigate('/admin/products')
       return
     }
@@ -109,10 +136,13 @@ const AdminProducts = () => {
         quantity: data.quantity || '',
         images: data.images || []
       })
+      setHasVariants(data.has_variants || false)
+      setVariants(data.variants || [])
       setShowForm(true)
     }
   }
 
+  // ---- Image upload helpers ----
   const uploadImage = async (file) => {
     try {
       setUploading(true)
@@ -132,7 +162,7 @@ const AdminProducts = () => {
 
       return publicUrl
     } catch (error) {
-      console.error('Error uploading image:', error)
+      console.error(error)
       return null
     } finally {
       setUploading(false)
@@ -141,121 +171,260 @@ const AdminProducts = () => {
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files)
-    const uploadedUrls = []
-
-    for (const file of files) {
-      const url = await uploadImage(file)
-      if (url) {
-        uploadedUrls.push(url)
-      }
-    }
-
-    setFormData({
-      ...formData,
-      images: [...formData.images, ...uploadedUrls]
-    })
+    const urls = await Promise.all(files.map(f => uploadImage(f)))
+    const valid = urls.filter(Boolean)
+    setFormData({ ...formData, images: [...formData.images, ...valid] })
   }
 
-  const removeImage = (indexToRemove) => {
-    setFormData({
-      ...formData,
-      images: formData.images.filter((_, index) => index !== indexToRemove)
-    })
+  const removeImage = (idx) => {
+    setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })
   }
 
+  // ---- Variant management ----
+  const addVariant = () => {
+    setVariants([...variants, { size: 'Small', price: '', stock: '', images: [] }])
+  }
+
+  const removeVariant = (index) => {
+    setVariants(variants.filter((_, i) => i !== index))
+  }
+
+  const updateVariant = (index, field, value) => {
+    const updated = [...variants]
+    updated[index][field] = value
+    setVariants(updated)
+  }
+
+  const uploadVariantImage = async (vIndex, files) => {
+    const urls = await Promise.all(Array.from(files).map(f => uploadImage(f)))
+    const valid = urls.filter(Boolean)
+    const updated = [...variants]
+    updated[vIndex].images = [...updated[vIndex].images, ...valid]
+    setVariants(updated)
+  }
+
+  const removeVariantImage = (vIndex, imgIndex) => {
+    const updated = [...variants]
+    updated[vIndex].images = updated[vIndex].images.filter((_, i) => i !== imgIndex)
+    setVariants(updated)
+  }
+
+  // ---- Submit ----
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log('Submitting form...')
 
-    const productData = {
+    let productData = {
       name: formData.name,
       category: formData.category,
-      price: parseFloat(formData.price),
       description: formData.description,
-      quantity: parseInt(formData.quantity),
-      images: formData.images
+      has_variants: hasVariants
     }
 
+    if (hasVariants) {
+      productData.variants = variants
+      productData.price = null
+      productData.quantity = null
+      productData.images = []
+    } else {
+      productData.price = parseFloat(formData.price)
+      productData.quantity = parseInt(formData.quantity)
+      productData.images = formData.images
+      productData.variants = null
+    }
+
+    let error
     if (editingProduct) {
-      // Update existing product
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from('products')
         .update(productData)
         .eq('id', editingProduct.id)
-
-      if (!error) {
-        alert('Product updated successfully!')
-        resetForm()
-        navigate('/admin/products')
-        fetchProducts()
-      } else {
-        console.error('Update error:', error)
-        alert('Error updating product: ' + error.message)
-      }
+      error = updateError
     } else {
-      // Add new product
-      const { error } = await supabase
+      const { error: insertError } = await supabase
         .from('products')
         .insert([productData])
+      error = insertError
+    }
 
-      if (!error) {
-        alert('Product added successfully!')
-        resetForm()
-        navigate('/admin/products')
-        fetchProducts()
-      } else {
-        console.error('Insert error:', error)
-        alert('Error adding product: ' + error.message)
-      }
+    if (!error) {
+      alert(editingProduct ? 'Product updated!' : 'Product added!')
+      resetForm()
+      navigate('/admin/products')
+      fetchProducts()
+    } else {
+      alert('Error: ' + error.message)
     }
   }
 
+  // ---- Helper for edit/delete ----
   const handleEditClick = (product) => {
-    console.log('Edit clicked for product:', product)
-    setEditingProduct(product)
-    setFormData({
-      name: product.name,
-      category: product.category,
-      price: product.price,
-      description: product.description,
-      quantity: product.quantity,
-      images: product.images || []
-    })
-    setShowForm(true)
-    // Navigate to edit URL
     navigate(`/admin/products/${product.id}`)
   }
 
   const handleDelete = async (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', productId)
-
+    if (window.confirm('Delete this product?')) {
+      const { error } = await supabase.from('products').delete().eq('id', productId)
       if (!error) {
-        alert('Product deleted successfully!')
+        alert('Deleted!')
         fetchProducts()
-      } else {
-        alert('Error deleting product: ' + error.message)
       }
     }
   }
 
-  const resetForm = () => {
-    setShowForm(false)
-    setEditingProduct(null)
-    setFormData({
-      name: '',
-      category: '',
-      price: '',
-      description: '',
-      quantity: '',
-      images: []
-    })
-    navigate('/admin/products')
+  // ---- Render form (shared for mobile & desktop) ----
+  const renderForm = () => {
+    console.log('Rendering form, showForm =', showForm)
+    return (
+      <div className={isMobile ? styles.mobileForm : styles.productForm}>
+        <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
+        <form onSubmit={handleSubmit}>
+          <div className={isMobile ? styles.mobileFormGroup : styles.formGrid}>
+            <div className={styles.formGroup}>
+              <label>Product Name *</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Category *</label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                required
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+              <label>Description *</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows="4"
+                required
+              />
+            </div>
+            <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={hasVariants}
+                  onChange={(e) => setHasVariants(e.target.checked)}
+                />
+                This product has multiple sizes/variants
+              </label>
+            </div>
+
+            {hasVariants ? (
+              <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+                <h3>Variants</h3>
+                {variants.map((variant, idx) => (
+                  <div key={idx} className={styles.variantRow}>
+                    <select
+                      value={variant.size}
+                      onChange={(e) => updateVariant(idx, 'size', e.target.value)}
+                    >
+                      <option value="Small">Small</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Large">Large</option>
+                    </select>
+                    <input
+                      type="number"
+                      placeholder="Price"
+                      value={variant.price}
+                      onChange={(e) => updateVariant(idx, 'price', e.target.value)}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Stock"
+                      value={variant.stock}
+                      onChange={(e) => updateVariant(idx, 'stock', e.target.value)}
+                    />
+                    <div>
+                      <label>Images</label>
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => uploadVariantImage(idx, e.target.files)}
+                      />
+                      <div className={styles.variantImages}>
+                        {variant.images.map((img, imgIdx) => (
+                          <span key={imgIdx}>
+                            <img src={img} width="50" alt="" />
+                            <button type="button" onClick={() => removeVariantImage(idx, imgIdx)}>✕</button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => removeVariant(idx)}>Remove</button>
+                  </div>
+                ))}
+                <button type="button" onClick={addVariant}>Add Variant</button>
+              </div>
+            ) : (
+              <>
+                <div className={styles.formGroup}>
+                  <label>Price (₹) *</label>
+                  <input
+                    type="number"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Quantity *</label>
+                  <input
+                    type="number"
+                    value={formData.quantity}
+                    onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+                  <label>Product Images</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                  />
+                  {uploading && <p>Uploading...</p>}
+                  <div className={styles.imagePreviewGrid}>
+                    {formData.images.map((img, idx) => (
+                      <div key={idx} className={styles.imagePreview}>
+                        <img src={img} alt="" />
+                        <button type="button" onClick={() => removeImage(idx)}>✕</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+          <div className={styles.formActions}>
+            <button type="submit" className={styles.saveBtn} disabled={uploading}>
+              <FontAwesomeIcon icon={faSave} /> {editingProduct ? 'Update Product' : 'Save Product'}
+            </button>
+            <button type="button" className={styles.cancelBtn} onClick={resetForm}>
+              <FontAwesomeIcon icon={faTimes} /> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    )
   }
 
-  // Mobile View
+  // ---- Mobile View ----
   if (isMobile) {
     return (
       <div className={styles.mobileAdminProducts}>
@@ -278,85 +447,7 @@ const AdminProducts = () => {
         </div>
 
         {showForm ? (
-          <div className={styles.mobileForm}>
-            <form onSubmit={handleSubmit}>
-              <input
-                type="text"
-                placeholder="Product Name *"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-              />
-              {/* <input 
-                type="text" 
-                placeholder="Category *" 
-                value={formData.category} 
-                onChange={(e) => setFormData({...formData, category: e.target.value})} 
-                required 
-              /> */}
-              <select
-                value={formData.category}
-                onChange={(e) =>
-                  setFormData({ ...formData, category: e.target.value })
-                }
-                required
-              >
-                <option value="">Select Category</option>
-
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.slug}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="number"
-                placeholder="Price *"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                required
-              />
-              <input
-                type="number"
-                placeholder="Quantity *"
-                value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                required
-              />
-              <textarea
-                placeholder="Description *"
-                rows="4"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                required
-              />
-
-              <div className={styles.mobileImageUpload}>
-                <label>
-                  <FontAwesomeIcon icon={faUpload} /> Upload Images
-                  <input type="file" accept="image/*" multiple onChange={handleImageUpload} disabled={uploading} />
-                </label>
-                {uploading && <p className={styles.uploadingText}>Uploading...</p>}
-                <div className={styles.mobileImagePreview}>
-                  {formData.images.map((img, idx) => (
-                    <div key={idx} className={styles.mobilePreviewItem}>
-                      <img src={img} alt="" />
-                      <button type="button" onClick={() => removeImage(idx)}>✕</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.mobileFormActions}>
-                <button type="submit" className={styles.saveBtn} disabled={uploading}>
-                  <FontAwesomeIcon icon={faSave} /> {editingProduct ? 'Update' : 'Save'}
-                </button>
-                <button type="button" className={styles.cancelBtn} onClick={resetForm}>
-                  <FontAwesomeIcon icon={faTimes} /> Cancel
-                </button>
-              </div>
-            </form>
-          </div>
+          renderForm()
         ) : (
           <div className={styles.mobileProductsList}>
             {loading ? (
@@ -366,21 +457,17 @@ const AdminProducts = () => {
             ) : (
               products.map(product => (
                 <div key={product.id} className={styles.mobileProductItem}>
-                  <img src={product.images[0] || 'https://placehold.co/60'} alt={product.name} />
+                  <img src={product.images?.[0] || 'https://placehold.co/60'} alt={product.name} />
                   <div className={styles.mobileProductDetails}>
                     <h4>{product.name}</h4>
-                    <p>₹{product.price.toLocaleString()} | Stock: {product.quantity}</p>
+                    <p>{product.has_variants ? 'Varies' : `₹${product.price?.toLocaleString()}`}</p>
                     <span className={`${styles.mobileStatus} ${product.quantity > 0 ? styles.inStock : styles.outStock}`}>
                       {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
                     </span>
                   </div>
                   <div className={styles.mobileProductActions}>
-                    <button onClick={() => handleEditClick(product)}>
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button onClick={() => handleDelete(product.id)}>
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
+                    <button onClick={() => handleEditClick(product)}><FontAwesomeIcon icon={faEdit} /></button>
+                    <button onClick={() => handleDelete(product.id)}><FontAwesomeIcon icon={faTrash} /></button>
                   </div>
                 </div>
               ))
@@ -391,7 +478,7 @@ const AdminProducts = () => {
     )
   }
 
-  // Desktop View
+  // ---- Desktop View ----
   return (
     <div className={styles.desktopAdminProducts}>
       <div className={styles.desktopHeader}>
@@ -403,100 +490,9 @@ const AdminProducts = () => {
         )}
       </div>
 
-      {showForm && (
-        <div className={styles.productForm}>
-          <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
-          <form onSubmit={handleSubmit}>
-            <div className={styles.formGrid}>
-              <div className={styles.formGroup}>
-                <label>Product Name *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Category *</label>
-                <select
-                  value={formData.category}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value })
-                  }
-                  required
-                >
-                  <option value="">Select Category</option>
-
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.slug}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.formGroup}>
-                <label>Price (₹) *</label>
-                <input
-                  type="number"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Quantity *</label>
-                <input
-                  type="number"
-                  value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                  required
-                />
-              </div>
-              <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                <label>Description *</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows="4"
-                  required
-                />
-              </div>
-              <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                <label>Product Images</label>
-                <div className={styles.imageUploadArea}>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageUpload}
-                    disabled={uploading}
-                  />
-                  {uploading && <p className={styles.uploadingText}>Uploading...</p>}
-                  <div className={styles.imagePreviewGrid}>
-                    {formData.images.map((img, idx) => (
-                      <div key={idx} className={styles.imagePreview}>
-                        <img src={img} alt="" />
-                        <button type="button" onClick={() => removeImage(idx)}>✕</button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className={styles.formActions}>
-              <button type="submit" className={styles.saveBtn} disabled={uploading}>
-                <FontAwesomeIcon icon={faSave} /> {editingProduct ? 'Update Product' : 'Save Product'}
-              </button>
-              <button type="button" className={styles.cancelBtn} onClick={resetForm}>
-                <FontAwesomeIcon icon={faTimes} /> Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {!showForm && (
+      {showForm ? (
+        renderForm()
+      ) : (
         <div className={styles.productsTable}>
           <table>
             <thead>
@@ -512,23 +508,17 @@ const AdminProducts = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="7" className={styles.loading}>Loading...</td></tr>
+                <tr><td colSpan="7">Loading...</td></tr>
               ) : products.length === 0 ? (
-                <tr><td colSpan="7" className={styles.noData}>No products yet. Click "Add New Product" to get started.</td></tr>
+                <tr><td colSpan="7">No products yet. Click "Add New Product".</td></tr>
               ) : (
                 products.map(product => (
                   <tr key={product.id}>
-                    <td>
-                      <img
-                        src={product.images[0] || 'https://placehold.co/50'}
-                        alt={product.name}
-                        className={styles.productThumb}
-                      />
-                    </td>
+                    <td><img src={product.images?.[0] || 'https://placehold.co/50'} alt={product.name} className={styles.productThumb} /></td>
                     <td>{product.name}</td>
                     <td>{product.category}</td>
-                    <td>₹{product.price.toLocaleString()}</td>
-                    <td>{product.quantity}</td>
+                    <td>{product.has_variants ? 'Varies' : `₹${product.price?.toLocaleString()}`}</td>
+                    <td>{product.has_variants ? '-' : product.quantity}</td>
                     <td>
                       <span className={`${styles.statusBadge} ${product.quantity > 0 ? styles.inStock : styles.outStock}`}>
                         {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}

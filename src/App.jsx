@@ -10,8 +10,8 @@ import ProductDetail from './pages/ProductDetail/ProductDetail'
 import Contact from './pages/Contact/Contact'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminProducts from './pages/Admin/AdminProducts'
-import styles from './App.module.css'
 import AdminCategories from './pages/Admin/AdminCategories'
+import styles from './App.module.css'
 
 function AppContent() {
   const location = useLocation()
@@ -29,18 +29,15 @@ function AppContent() {
           <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/admin/dashboard" element={
-            isAdmin ? <AdminDashboard /> : <Navigate to="/login" />
-          } />
-          <Route path="/admin/products" element={
-            isAdmin ? <AdminProducts /> : <Navigate to="/login" />
-          } />
-          <Route path="/admin/products/:id" element={
-            isAdmin ? <AdminProducts /> : <Navigate to="/login" />
-          } />
-          <Route path="/admin/categories" element={
-            isAdmin ? <AdminCategories  /> : <Navigate to="/login" />
-          } />
+
+          <Route path="/admin/dashboard" element={isAdmin ? <AdminDashboard /> : <Navigate to="/login" />} />
+          
+          {/* ✅ Admin Products routes – note order: new before :id */}
+          <Route path="/admin/products" element={isAdmin ? <AdminProducts /> : <Navigate to="/login" />} />
+          <Route path="/admin/products/new" element={isAdmin ? <AdminProducts /> : <Navigate to="/login" />} />
+          <Route path="/admin/products/:id" element={isAdmin ? <AdminProducts /> : <Navigate to="/login" />} />
+
+          <Route path="/admin/categories" element={isAdmin ? <AdminCategories /> : <Navigate to="/login" />} />
         </Routes>
       </main>
       <Footer isHomePage={isHomePage} />
@@ -57,4 +54,4 @@ function App() {
   )
 }
 
-export default App 
+export default App

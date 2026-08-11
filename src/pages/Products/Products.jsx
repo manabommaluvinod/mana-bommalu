@@ -16,40 +16,44 @@ const Products = () => {
   const [isMobile, setIsMobile] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
+
+  // ---- Fetch categories ----
   const fetchCategories = async () => {
     const { data, error } = await supabase
       .from('categories')
       .select('id, name, slug')
       .eq('is_active', true)
       .order('name')
-
     if (!error) setCategories(data || [])
   }
-  const clearAll = () => {
-    setCategories([])
+
+  // ---- Get display price (range for variants) ----
+  const getDisplayPrice = (product) => {
+    if (product.has_variants && product.variants?.length) {
+      const prices = product.variants.map(v => Number(v.price)).filter(p => !isNaN(p) && p > 0)
+      if (prices.length === 0) return 'Price varies'
+      const min = Math.min(...prices)
+      const max = Math.max(...prices)
+      return min === max ? `₹${min.toLocaleString()}` : `₹${min.toLocaleString()} – ₹${max.toLocaleString()}`
+    }
+    return `₹${product.price?.toLocaleString() || '0'}`
   }
+
+  // ---- Effects ----
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768)
     checkMobile()
     window.addEventListener('resize', checkMobile)
 
-    // Get search parameter from URL
-    // const searchQuery = searchParams.get('search')
-    // if (searchQuery) {
-    //   setSearchTerm(searchQuery)
-    // }
-    setSearchTerm(searchParams.get("search") || "");
-    const categoryParam = searchParams.get("category");
-
-    if (categoryParam) {
-      setSelectedCategory(categoryParam);
-    } else {
-      setSelectedCategory("all");
-    }
+    // Read URL params
+    setSearchTerm(searchParams.get("search") || "")
+    const categoryParam = searchParams.get("category")
+    setSelectedCategory(categoryParam || "all")
 
     fetchProducts()
     fetchCategories()
 
+    // Real‑time subscription
     const subscription = supabase
       .channel('products_channel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => fetchProducts())
@@ -61,6 +65,7 @@ const Products = () => {
     }
   }, [searchParams])
 
+  // ---- Filter and sort ----
   useEffect(() => {
     filterProducts()
   }, [products, selectedCategory, sortBy, searchTerm])
@@ -68,47 +73,55 @@ const Products = () => {
   const fetchProducts = async () => {
     setLoading(true)
     const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false })
-    if (data) {
-      setProducts(data)
-      // const uniqueCategories = [...new Set(data.map(p => p.category))]
-      // setCategories(uniqueCategories)
-    }
+    if (data) setProducts(data)
     setLoading(false)
   }
 
   const filterProducts = () => {
     let filtered = [...products]
 
-    // Filter by category
+    // Category filter
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(
-        (p) => p.category === selectedCategory
-      )
+      filtered = filtered.filter(p => p.category === selectedCategory)
     }
-    const maxPrice = searchParams.get("maxPrice");
 
+    // Price filter (if any)
+    const maxPrice = searchParams.get("maxPrice")
     if (maxPrice) {
-      filtered = filtered.filter(
-        (p) => Number(p.price) <= Number(maxPrice)
-      );
+      filtered = filtered.filter(p => {
+        if (p.has_variants && p.variants?.length) {
+          const minPrice = Math.min(...p.variants.map(v => Number(v.price)))
+          return minPrice <= Number(maxPrice)
+        }
+        return Number(p.price) <= Number(maxPrice)
+      })
     }
-    // Filter by search term (search in name, category, and description)
+
+    // Search term
     if (searchTerm) {
       const term = searchTerm.toLowerCase()
       filtered = filtered.filter(p =>
         p.name.toLowerCase().includes(term) ||
-        p.description.toLowerCase().includes(term) ||
+        (p.description && p.description.toLowerCase().includes(term)) ||
         p.category.toLowerCase().includes(term)
       )
     }
 
-    // Sort products
+    // Sort
     switch (sortBy) {
       case 'price-low':
-        filtered.sort((a, b) => a.price - b.price)
+        filtered.sort((a, b) => {
+          const priceA = a.has_variants ? Math.min(...a.variants.map(v => Number(v.price))) : a.price
+          const priceB = b.has_variants ? Math.min(...b.variants.map(v => Number(v.price))) : b.price
+          return priceA - priceB
+        })
         break
       case 'price-high':
-        filtered.sort((a, b) => b.price - a.price)
+        filtered.sort((a, b) => {
+          const priceA = a.has_variants ? Math.max(...a.variants.map(v => Number(v.price))) : a.price
+          const priceB = b.has_variants ? Math.max(...b.variants.map(v => Number(v.price))) : b.price
+          return priceB - priceA
+        })
         break
       case 'name-asc':
         filtered.sort((a, b) => a.name.localeCompare(b.name))
@@ -122,6 +135,7 @@ const Products = () => {
     setFilteredProducts(filtered)
   }
 
+  // ---- Search handlers ----
   const handleSearchSubmit = (e) => {
     e.preventDefault()
     if (searchTerm.trim()) {
@@ -136,7 +150,9 @@ const Products = () => {
     setSearchParams({})
   }
 
-  // Mobile View
+  // ============================================
+  // MOBILE VIEW
+  // ============================================
   if (isMobile) {
     return (
       <div className={styles.mobileContainer}>
@@ -152,9 +168,7 @@ const Products = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button type="submit" className={styles.searchButton}>
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
+          <button type="submit"><FontAwesomeIcon icon={faSearch} /></button>
         </form>
 
         {searchTerm && (
@@ -165,10 +179,10 @@ const Products = () => {
         )}
 
         <div className={styles.mobileFilterBar}>
-          <button onClick={() => setShowFilters(!showFilters)} className={styles.filterBtn}>
+          <button onClick={() => setShowFilters(!showFilters)}>
             <FontAwesomeIcon icon={faFilter} /> Filter
           </button>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={styles.sortSelect}>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
             <option value="default">Sort by</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
@@ -189,15 +203,11 @@ const Products = () => {
             >
               All Products
             </button>
-            {categories.map((cat) => (
+            {categories.map(cat => (
               <button
                 key={cat.id}
-                className={`${styles.mobileCategoryBtn} ${selectedCategory === cat.slug ? styles.active : ''
-                  }`}
-                onClick={() => {
-                  setSelectedCategory(cat.slug)
-                  setShowFilters(false)
-                }}
+                className={`${styles.mobileCategoryBtn} ${selectedCategory === cat.slug ? styles.active : ''}`}
+                onClick={() => { setSelectedCategory(cat.slug); setShowFilters(false); }}
               >
                 {cat.name}
               </button>
@@ -209,18 +219,18 @@ const Products = () => {
           <div className={styles.mobileLoading}>Loading products...</div>
         ) : filteredProducts.length === 0 ? (
           <div className={styles.mobileEmpty}>
-            <p>No products found for "{searchTerm}"</p>
+            <p>No products found</p>
             <button onClick={clearSearch}>Clear Search</button>
           </div>
         ) : (
           <div className={styles.mobileProductGrid}>
             {filteredProducts.map(product => (
               <Link to={`/product/${product.id}`} key={product.id} className={styles.mobileProductCard}>
-                <img src={product.images[0] || 'https://placehold.co/400'} alt={product.name} />
+                <img src={product.images?.[0] || 'https://placehold.co/400'} alt={product.name} />
                 <div className={styles.mobileProductInfo}>
                   <h3>{product.name}</h3>
                   <p className={styles.mobileCategory}>{product.category}</p>
-                  <p className={styles.mobilePrice}>₹{product.price.toLocaleString()}</p>
+                  <p className={styles.mobilePrice}>{getDisplayPrice(product)}</p>
                 </div>
               </Link>
             ))}
@@ -230,7 +240,9 @@ const Products = () => {
     )
   }
 
-  // Desktop View
+  // ============================================
+  // DESKTOP VIEW
+  // ============================================
   return (
     <div className={styles.desktopContainer}>
       <div className={styles.banner}>
@@ -254,15 +266,14 @@ const Products = () => {
             >
               All Products
             </button>
-            {categories.map((cat) => (
+            {categories.map(cat => (
               <button
                 key={cat.id}
-                className={`${styles.categoryBtn} ${selectedCategory === cat.slug ? styles.active : ''
-                  }`}
-                  onClick={() => {
-                    setSelectedCategory(cat.slug);
-                    setSearchParams({ category: cat.slug });
-                  }}
+                className={`${styles.categoryBtn} ${selectedCategory === cat.slug ? styles.active : ''}`}
+                onClick={() => {
+                  setSelectedCategory(cat.slug)
+                  setSearchParams({ category: cat.slug })
+                }}
               >
                 {cat.name}
               </button>
@@ -279,9 +290,7 @@ const Products = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <button type="submit">
-                <FontAwesomeIcon icon={faSearch} />
-              </button>
+              <button type="submit"><FontAwesomeIcon icon={faSearch} /></button>
             </form>
             <select
               value={sortBy}
@@ -302,7 +311,7 @@ const Products = () => {
             <div className={styles.loading}>Loading products...</div>
           ) : filteredProducts.length === 0 ? (
             <div className={styles.empty}>
-              <p>No products found for "{searchTerm}"</p>
+              <p>No products found</p>
               <button onClick={clearSearch}>Clear Search</button>
             </div>
           ) : (
@@ -310,12 +319,12 @@ const Products = () => {
               {filteredProducts.map(product => (
                 <Link to={`/product/${product.id}`} key={product.id} className={styles.productCard}>
                   <div className={styles.imageWrapper}>
-                    <img src={product.images[0] || 'https://placehold.co/400'} alt={product.name} />
+                    <img src={product.images?.[0] || 'https://placehold.co/400'} alt={product.name} />
                   </div>
                   <div className={styles.productInfo}>
                     <h3>{product.name}</h3>
                     <p className={styles.category}>{product.category}</p>
-                    <p className={styles.price}>₹{product.price.toLocaleString()}</p>
+                    <p className={styles.price}>{getDisplayPrice(product)}</p>
                   </div>
                 </Link>
               ))}
